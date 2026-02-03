@@ -1,0 +1,68 @@
+Case A — Low-risk (expected class often 0)
+Pregnancies: 0
+​Glucose: 85
+​BloodPressure: 65
+​SkinThickness: 15
+​Insulin: 60
+​BMI: 21.5
+​DiabetesPedigreeFunction: 0.15
+​Age: 22
+​
+Expected behavior: probability low; predicted_class usually 0.
+​
+
+Case B — Medium / borderline (often close to threshold)
+Pregnancies: 3
+​Glucose: 125
+​BloodPressure: 72
+SkinThickness: 23
+​Insulin: 110
+​BMI: 30.5
+​DiabetesPedigreeFunction: 0.45
+​Age: 33
+​
+Expected behavior: probability around mid-range; class may flip depending on your tuned threshold.
+​
+Case C — High-risk (expected class often 1)
+Pregnancies: 8​
+Glucose: 190
+​BloodPressure: 90
+​SkinThickness: 35
+​Insulin: 250
+​BMI: 38.5
+​DiabetesPedigreeFunction: 1.20
+​Age: 55
+​
+Expected behavior: probability high; predicted_class usually 1.
+​
+Case D — Very high glucose (stress test)
+Pregnancies: 2
+Glucose: 199
+​BloodPressure: 70
+​SkinThickness: 20
+​Insulin: 85
+BMI: 28.4
+​DiabetesPedigreeFunction: 0.35
+​Age: 29
+​
+
+Expected behavior: higher probability than “typical” values because glucose is a strong driver in many analyses.
+
+Case E — “Zeros as missing” check (only use if your API replaces 0→NaN)
+Pregnancies: 1
+​Glucose: 0
+​BloodPressure: 0
+​SkinThickness: 0
+​Insulin: 0
+BMI: 0
+​DiabetesPedigreeFunction: 0.50
+​Age: 30
+​
+Expected behavior: if you coded 0→NaN + imputation, it should still return a valid prediction (not crash).
+​
+
+Case F — Invalid input (should fail validation)
+Pregnancies: -1 (others anything)
+
+Expected behavior: request rejected because your Pydantic fields use ge=0, so negative values are not allowed.
+​

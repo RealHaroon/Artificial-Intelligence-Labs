@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diabetes Prediction</title>
+
+  <!-- Optional CSS if you create static/style.css -->
+  <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 16px; }
+    h1 { margin-bottom: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    label { font-size: 14px; display: block; margin-bottom: 4px; }
+    input { width: 100%; padding: 10px; box-sizing: border-box; }
+    button { padding: 10px 14px; cursor: pointer; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 14px; margin-top: 16px; }
+    .muted { color: #555; font-size: 14px; }
+    .error { color: #b00020; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+
+<body>
+  <h1>Diabetes Prediction (Logistic Regression)</h1>
+  <p class="muted">Enter patient features and click Predict.</p>
+
+  <form id="predictForm" class="card">
+    <div class="grid">
+      <div>
+        <label>Pregnancies</label>
+        <input type="number" id="Pregnancies" min="0" value="2" required />
+      </div>
+      <div>
+        <label>Glucose</label>
+        <input type="number" id="Glucose" min="0" step="any" value="130" required />
+      </div>
+
+      <div>
+        <label>BloodPressure</label>
+        <input type="number" id="BloodPressure" min="0" step="any" value="70" required />
+      </div>
+      <div>
+        <label>SkinThickness</label>
+        <input type="number" id="SkinThickness" min="0" step="any" value="20" required />
+      </div>
+
+      <div>
+        <label>Insulin</label>
+        <input type="number" id="Insulin" min="0" step="any" value="85" required />
+      </div>
+      <div>
+        <label>BMI</label>
+        <input type="number" id="BMI" min="0" step="any" value="28.4" required />
+      </div>
+
+      <div>
+        <label>DiabetesPedigreeFunction</label>
+        <input type="number" id="DiabetesPedigreeFunction" min="0" step="any" value="0.35" required />
+      </div>
+      <div>
+        <label>Age</label>
+        <input type="number" id="Age" min="0" value="29" required />
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; display: flex; gap: 10px;">
+      <button type="submit">Predict</button>
+      <button type="button" id="fillExample">Fill Example</button>
+    </div>
+  </form>
+
+  <div id="result" class="card" style="display:none;"></div>
+
+  <script>
+    const form = document.getElementById("predictForm");
+    const resultDiv = document.getElementById("result");
+    const fillBtn = document.getElementById("fillExample");
+
+    function val(id, asInt=false) {
+      const v = document.getElementById(id).value;
+      return asInt ? parseInt(v, 10) : parseFloat(v);
+    }
+
+    fillBtn.addEventListener("click", () => {
+      document.getElementById("Pregnancies").value = 2;
+      document.getElementById("Glucose").value = 130;
+      document.getElementById("BloodPressure").value = 70;
+      document.getElementById("SkinThickness").value = 20;
+      document.getElementById("Insulin").value = 85;
+      document.getElementById("BMI").value = 28.4;
+      document.getElementById("DiabetesPedigreeFunction").value = 0.35;
+      document.getElementById("Age").value = 29;
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = "Predicting...";
+
+      const payload = {
+        Pregnancies: val("Pregnancies", true),
+        Glucose: val("Glucose"),
+        BloodPressure: val("BloodPressure"),
+        SkinThickness: val("SkinThickness"),
+        Insulin: val("Insulin"),
+        BMI: val("BMI"),
+        DiabetesPedigreeFunction: val("DiabetesPedigreeFunction"),
+        Age: val("Age", true)
+      };
+
+      try {
+        const res = await fetch("/predict-diabetes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error(txt || ("HTTP " + res.status));
+        }
+
+        const data = await res.json();
+        const prob = (data.diabetes_probability * 100).toFixed(2);
+
+        resultDiv.innerHTML = `
+          <h3>Prediction Result</h3>
+          <p><b>Diabetes probability:</b> ${prob}%</p>
+          <p><b>Threshold used:</b> ${data.threshold_used}</p>
+          <p><b>Predicted class:</b> ${data.predicted_class} ${data.predicted_class === 1 ? "(Diabetic)" : "(Non-diabetic)"}</p>
+        `;
+      } catch (err) {
+        resultDiv.innerHTML = `<p class="error"><b>Error:</b> ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
