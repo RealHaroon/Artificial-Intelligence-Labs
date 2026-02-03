@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Loan Approval Prediction System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f9;
+      color: #222;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    label {
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2c6bed;
+    }
+
+    .actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 9px 14px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #2c6bed;
+      background: #2c6bed;
+      color: white;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #f0f0f0;
+      color: #333;
+      border-color: #ccc;
+    }
+
+    aside {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .result-box {
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .muted {
+      color: #666;
+      font-size: 13px;
+    }
+
+    .error {
+      color: #b00020;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    footer {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <header>
+      <h1>Loan Approval Prediction System</h1>
+      <p>
+        Decision Tree based classification model deployed using FastAPI
+      </p>
+    </header>
+
+    <div class="card">
+      <div class="layout">
+
+        <!-- FORM -->
+        <form id="loanForm">
+          <div class="grid">
+
+            <div>
+              <label>Gender</label>
+              <select name="Gender">
+                <option value="">--</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Married</label>
+              <select name="Married">
+                <option value="">--</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Dependents</label>
+              <select name="Dependents">
+                <option value="">--</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3+">3+</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Education</label>
+              <select name="Education">
+                <option value="">--</option>
+                <option value="Graduate">Graduate</option>
+                <option value="Not Graduate">Not Graduate</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Self Employed</label>
+              <select name="Self_Employed">
+                <option value="">--</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Property Area</label>
+              <select name="Property_Area">
+                <option value="">--</option>
+                <option value="Urban">Urban</option>
+                <option value="Semiurban">Semiurban</option>
+                <option value="Rural">Rural</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Applicant Income</label>
+              <input type="number" name="ApplicantIncome" value="5000" required />
+            </div>
+
+            <div>
+              <label>Coapplicant Income</label>
+              <input type="number" name="CoapplicantIncome" value="0" required />
+            </div>
+
+            <div>
+              <label>Loan Amount</label>
+              <input type="number" name="LoanAmount" value="128" />
+            </div>
+
+            <div>
+              <label>Loan Term</label>
+              <input type="number" name="Loan_Amount_Term" value="360" />
+            </div>
+
+            <div>
+              <label>Credit History</label>
+              <select name="Credit_History">
+                <option value="">--</option>
+                <option value="1">1</option>
+                <option value="0">0</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="actions">
+            <button type="submit">Predict</button>
+            <button type="button" class="secondary" id="resetBtn">Reset</button>
+          </div>
+
+          <footer>
+            API Endpoint: <code>/predict-loan</code>
+          </footer>
+        </form>
+
+        <!-- OUTPUT -->
+        <aside>
+          <strong>Prediction Output</strong>
+
+          <div class="result-box">
+            <div class="muted">Loan Status</div>
+            <div id="pred">—</div>
+          </div>
+
+          <div class="result-box">
+            <div class="muted">Approval Probability</div>
+            <div id="prob">—</div>
+          </div>
+
+          <div id="error" class="error"></div>
+        </aside>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const form = document.getElementById("loanForm");
+    const predEl = document.getElementById("pred");
+    const probEl = document.getElementById("prob");
+    const errEl = document.getElementById("error");
+    const resetBtn = document.getElementById("resetBtn");
+
+    resetBtn.onclick = () => {
+      form.reset();
+      predEl.textContent = "—";
+      probEl.textContent = "—";
+      errEl.textContent = "";
+    };
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      errEl.textContent = "";
+
+      const data = new FormData(form);
+      const payload = Object.fromEntries(data.entries());
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/predict-loan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const json = await res.json();
+        predEl.textContent = json.prediction;
+        probEl.textContent = json.approval_probability;
+      } catch (err) {
+        errEl.textContent = "Failed to connect to API.";
+      }
+    };
+  </script>
+
+</body>
+</html>
