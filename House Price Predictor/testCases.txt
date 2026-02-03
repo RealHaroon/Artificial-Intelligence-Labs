@@ -1,0 +1,31 @@
+OverallQual: 6
+GrLivArea: 1600
+GarageCars: 2
+TotalBsmtSF: 900
+YearBuilt: 2003
+
+Expected price range: $160k – $220k
+
+OverallQual: 8
+GrLivArea: 2400
+GarageCars: 3
+TotalBsmtSF: 1200
+YearBuilt: 2015
+
+Expected price range: $280k – $380k
+
+OverallQual: 4
+GrLivArea: 1100
+GarageCars: 1
+TotalBsmtSF: 600
+YearBuilt: 1975
+
+Expected price range: $90k – $120k
+
+OverallQual: 9
+GrLivArea: 3200
+GarageCars: 3
+TotalBsmtSF: 1600
+YearBuilt: 2018
+
+Expected price range: $350k – $550k
