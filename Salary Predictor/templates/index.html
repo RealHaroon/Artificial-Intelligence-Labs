@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Predictor</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        h2 { color: #333; }
+        input[type="number"] { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; background-color: #e9f5ff; border-radius: 5px; color: #004085; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Salary Predictor</h2>
+        <p>Predict annual salary based on years of experience.</p>
+        
+        <form method="post">
+            <input type="number" step="0.1" name="years_experience" placeholder="Enter Years of Experience" required>
+            <button type="submit">Predict Salary</button>
+        </form>
+
+        {% if prediction %}
+        <div class="result">
+            For {{ years }} years, predicted salary is: <br>
+            <span style="font-size: 1.5rem;">${{ "{:,.2f}".format(prediction) }}</span>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
