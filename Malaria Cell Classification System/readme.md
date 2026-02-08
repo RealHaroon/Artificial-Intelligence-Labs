@@ -47,34 +47,3 @@ The project includes a FastAPI app with:
 
 Returned probability is `P(Parasitized)` from the model sigmoid output.
 
-## Project Structure (suggested)
-
-```
-.
-├── notebook/
-│   └── malaria_cnn_lab.ipynb
-├── app/
-│   ├── main.py
-│   ├── malaria_cnn.keras
-│   ├── class_names.json
-│   └── templates/
-│       └── index.html
-└── README.md
-```
-
-## How to Run (Local API)
-```bash
-cd app
-pip install fastapi uvicorn tensorflow pillow jinja2 python-multipart
-uvicorn main:app --reload --port 8000
-```
-Open: http://127.0.0.1:8000
-
-## Disclaimer
-**Educational only.** This model is a learning project and must not be used for medical diagnosis or clinical decision-making without proper validation, approvals, and domain expert review.
-
-## Acknowledgements
-- Dataset credits go to the Kaggle dataset owners/maintainers.
-- Built with TensorFlow/Keras and FastAPI.
-```
-
