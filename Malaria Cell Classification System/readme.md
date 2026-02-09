@@ -1,5 +1,5 @@
 
-# Malaria Detection with CNN (Binary Image Classification)
+# Malaria Cell Classification with CNN (Binary Image Classification)
 
 A simple Convolutional Neural Network (CNN) that classifies thin blood smear cell images into **Parasitized** (infected) vs **Uninfected** using TensorFlow/Keras. The goal is to demonstrate CNN basics (convolutions, feature maps, pooling) and a complete ML workflow from dataset loading to deployment with a FastAPI endpoint.
 
@@ -47,3 +47,36 @@ The project includes a FastAPI app with:
 
 Returned probability is `P(Parasitized)` from the model sigmoid output.
 
+## Folder Structure
+
+```bash
+Malaria-Cell-Classification-System/
+├── __pycache__/
+├── model/
+│   ├── class_names.json
+│   └── malaria_cnn.keras
+├── notebook/
+│   └── Malaria_Cell_Classification.ipynb
+├── templates/
+│   └── index.html
+├── app.py
+└── readme.md
+```
+
+## How to Run (Local API)
+```bash
+cd app
+pip install fastapi uvicorn tensorflow pillow jinja2 python-multipart
+uvicorn main:app --reload --port 8000
+```
+Open: http://127.0.0.1:8000
+
+## Disclaimer
+**Educational only.** This model is a learning project and must not be used for medical diagnosis or clinical decision-making without proper validation, approvals, and domain expert review.
+
+## Acknowledgements
+- Dataset credits go to the Kaggle dataset owners/maintainers.
+- Built with TensorFlow/Keras and FastAPI.
+```
+
+If you paste your repo’s actual folder names (e.g., `app/` vs `src/`), I can adjust the “Project Structure” and run commands to match your GitHub layout exactly.
