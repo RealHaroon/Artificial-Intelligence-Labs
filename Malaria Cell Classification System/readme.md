@@ -77,6 +77,7 @@ Open: http://127.0.0.1:8000
 ## Acknowledgements
 - Dataset credits go to the Kaggle dataset owners/maintainers.
 - Built with TensorFlow/Keras and FastAPI.
-```
 
-If you paste your repo’s actual folder names (e.g., `app/` vs `src/`), I can adjust the “Project Structure” and run commands to match your GitHub layout exactly.
+#### Author : **M Haroon Abbas** (https://github.com/RealHaroon)
+
+---
