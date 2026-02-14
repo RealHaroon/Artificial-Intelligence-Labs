@@ -15,8 +15,8 @@ app = FastAPI(title="Malaria Detection (Educational)")
 templates = Jinja2Templates(directory="templates")
 
 # Load artifacts once at startup
-model = tf.keras.models.load_model("malaria_cnn.keras")
-with open("class_names.json", "r") as f:
+model = tf.keras.models.load_model("D:\\Github\\Artificial-Intelligence-Labs\\Malaria Cell Classification System\\model\\malaria_cnn.keras")
+with open("D:\\Github\\Artificial-Intelligence-Labs\\Malaria Cell Classification System\\model\\class_names.json", "r") as f:
     CLASS_NAMES = json.load(f)  # ["Uninfected", "Parasitized"]
 
 
