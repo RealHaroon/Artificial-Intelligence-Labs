@@ -34,6 +34,10 @@
 <script>
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
+const resultEl = document.getElementById("result");
+const probsEl = document.getElementById("probs");
+const btnPredict = document.getElementById("btnPredict");
+const btnClear = document.getElementById("btnClear");
 
 function resetCanvas() {
   ctx.fillStyle = "black";
@@ -68,39 +72,43 @@ canvas.addEventListener("pointermove", (e) => {
   ctx.stroke();
 });
 
-canvas.addEventListener("pointerup", () => drawing = false);
-canvas.addEventListener("pointerleave", () => drawing = false);
+function stopDrawing() { drawing = false; }
+canvas.addEventListener("pointerup", stopDrawing);
+canvas.addEventListener("pointerleave", stopDrawing);
 
-document.getElementById("btnClear").addEventListener("click", () => {
+btnClear.addEventListener("click", () => {
   resetCanvas();
-  document.getElementById("result").textContent = "Cleared.";
-  document.getElementById("probs").textContent = "{}";
+  resultEl.textContent = "Cleared.";
+  probsEl.textContent = "{}";
 });
 
-document.getElementById("btnPredict").addEventListener("click", async () => {
-  const dataURL = canvas.toDataURL("image/png"); // "data:image/png;base64,..."
+btnPredict.addEventListener("click", async () => {
+  try {
+    resultEl.textContent = "Predicting...";
+    probsEl.textContent = "{}";
 
-  const res = await fetch("/predict", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ image: dataURL })
-  });
+    const dataURL = canvas.toDataURL("image/png");
 
-  const out = await res.json();
-  document.getElementById("result").textContent =
-    `Prediction: ${out.prediction} (confidence: ${out.confidence.toFixed(4)})`;
-  document.getElementById("probs").textContent = JSON.stringify(out.probs, null, 2);
+    const res = await fetch("/predict", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ image: dataURL })
+    });
+
+    // Handle 400 "No digit drawn" (or any non-2xx)
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      resultEl.textContent = err.detail || `Request failed (${res.status})`;
+      return;
+    }
+
+    const out = await res.json();
+    resultEl.textContent = `Prediction: ${out.prediction} (confidence: ${Number(out.confidence).toFixed(4)})`;
+    probsEl.textContent = JSON.stringify(out.probs, null, 2);
+  } catch (e) {
+    resultEl.textContent = "Network/error: " + (e?.message || e);
+  }
 });
-
-const res = await fetch("/predict", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ image: dataURL }) });
-
-if (!res.ok) {
-  const err = await res.json();
-  document.getElementById("result").textContent = err.detail || "No digit drawn.";
-  document.getElementById("probs").textContent = "{}";
-  return;
-}
-
 </script>
 </body>
 </html>
