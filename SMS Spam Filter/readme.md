@@ -19,7 +19,7 @@ An end-to-end Natural Language Processing (NLP) project that classifies SMS mess
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/RealHaroon/sms-spam-detector.git](https://github.com/RealHaroon/sms-spam-detector.git)
+   git clone [https://github.com/RealHaroon/Artificial-Intelligence-Labs/tree/main/SMS%20Spam%20Filter](https://github.com/RealHaroon/Artificial-Intelligence-Labs/tree/main/SMS%20Spam%20Filter)
    cd sms-spam-detector```
 
 2. **Install the required dependencies:**
@@ -70,7 +70,7 @@ Accepts a JSON payload containing a raw text message and returns the classificat
 
 ## 👨‍💻 Author
 
-**M Haroon Abbas** BSCS | OCI AI & Generative AI Certified Professional
+**M Haroon Abbas**  | Data Scientist and ML Eng
 
 GitHub: [@RealHaroon](https://github.com/RealHaroon)
 
