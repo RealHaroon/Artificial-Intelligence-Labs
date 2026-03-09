@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chest X-Ray Classifier</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    /* ── Header ───────────────────────────────────────────────── */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p {
+      margin-top: 0.5rem;
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+    .model-badge {
+      display: inline-block;
+      margin-top: 0.75rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 999px;
+      padding: 0.3rem 1rem;
+      font-size: 0.8rem;
+      color: #7dd3fc;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Card ─────────────────────────────────────────────────── */
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 1.25rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    }
+
+    /* ── Upload Zone ──────────────────────────────────────────── */
+    .upload-zone {
+      border: 2px dashed #475569;
+      border-radius: 1rem;
+      padding: 2.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.25s;
+      position: relative;
+    }
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: #60a5fa;
+      background: rgba(96, 165, 250, 0.05);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .upload-zone p { color: #94a3b8; font-size: 0.9rem; }
+    .upload-zone span { color: #60a5fa; font-weight: 600; }
+
+    /* ── Preview ──────────────────────────────────────────────── */
+    #preview-container {
+      display: none;
+      margin-top: 1.25rem;
+      text-align: center;
+    }
+    #preview-container img {
+      max-height: 260px;
+      border-radius: 0.75rem;
+      border: 2px solid #334155;
+      object-fit: contain;
+      width: 100%;
+    }
+    #file-name {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    /* ── Button ───────────────────────────────────────────────── */
+    .btn {
+      display: block;
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 0.75rem;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.03em;
+    }
+    .btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Loader ───────────────────────────────────────────────── */
+    #loader {
+      display: none;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid #334155;
+      border-top-color: #60a5fa;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loader p { color: #94a3b8; font-size: 0.9rem; }
+
+    /* ── Results ──────────────────────────────────────────────── */
+    #result-container { display: none; margin-top: 1.75rem; }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem;
+      border-radius: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+    .result-emoji  { font-size: 2.8rem; line-height: 1; }
+    .result-class  { font-size: 1.6rem; font-weight: 700; }
+    .result-confidence { font-size: 0.9rem; opacity: 0.85; margin-top: 0.2rem; }
+
+    /* ── Probability Bars ─────────────────────────────────────── */
+    .prob-section h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+    .prob-item { margin-bottom: 0.75rem; }
+    .prob-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+      color: #cbd5e1;
+    }
+    .prob-bar-bg {
+      background: #0f172a;
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── Description ──────────────────────────────────────────── */
+    .description-box {
+      margin-top: 1.25rem;
+      padding: 0.9rem 1rem;
+      background: #0f172a;
+      border-radius: 0.75rem;
+      border-left: 4px solid #60a5fa;
+      font-size: 0.88rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    /* ── Disclaimer ───────────────────────────────────────────── */
+    .disclaimer {
+      margin-top: 1.25rem;
+      padding: 0.85rem 1rem;
+      background: rgba(234, 179, 8, 0.08);
+      border: 1px solid rgba(234, 179, 8, 0.25);
+      border-radius: 0.75rem;
+      font-size: 0.8rem;
+      color: #fbbf24;
+      line-height: 1.55;
+    }
+
+    /* ── Reset Link ───────────────────────────────────────────── */
+    #reset-btn {
+      display: block;
+      text-align: center;
+      margin-top: 1.25rem;
+      color: #60a5fa;
+      font-size: 0.88rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-decoration: underline;
+    }
+    #reset-btn:hover { color: #93c5fd; }
+
+    /* ── Error ────────────────────────────────────────────────── */
+    #error-box {
+      display: none;
+      margin-top: 1.25rem;
+      padding: 0.9rem 1rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 0.75rem;
+      color: #fca5a5;
+      font-size: 0.88rem;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    footer {
+      margin-top: 3rem;
+      color: #475569;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header>
+    <h1>🫁 Chest X-Ray Classifier</h1>
+    <p>COVID-19 · Pneumonia · Normal Detection</p>
+    <span class="model-badge">DenseNet121 · Transfer Learning · ImageNet</span>
+  </header>
+
+  <!-- ── Main Card ──────────────────────────────────────────── -->
+  <div class="card">
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="upload-zone">
+      <input type="file" id="file-input" accept="image/jpeg,image/png" />
+      <div class="upload-icon">📤</div>
+      <p><span>Click to upload</span> or drag & drop</p>
+      <p style="margin-top:0.3rem">JPEG / PNG • Max 10 MB</p>
+    </div>
+
+    <!-- Image Preview -->
+    <div id="preview-container">
+      <img id="preview-img" src="" alt="X-Ray Preview" />
+      <p id="file-name"></p>
+    </div>
+
+    <!-- Analyse Button -->
+    <button class="btn" id="predict-btn" disabled>
+      🔬 Analyse X-Ray
+    </button>
+
+    <!-- Loader -->
+    <div id="loader">
+      <div class="spinner"></div>
+      <p>Analysing X-ray with DenseNet121…</p>
+    </div>
+
+    <!-- Error Box -->
+    <div id="error-box"></div>
+
+    <!-- Results -->
+    <div id="result-container">
+
+      <!-- Predicted Class Header -->
+      <div class="result-header" id="result-header">
+        <div class="result-emoji" id="result-emoji"></div>
+        <div>
+          <div class="result-class" id="result-class"></div>
+          <div class="result-confidence" id="result-confidence"></div>
+        </div>
+      </div>
+
+      <!-- Probability Bars -->
+      <div class="prob-section">
+        <h3>Class Probabilities</h3>
+        <div id="prob-bars"></div>
+      </div>
+
+      <!-- Clinical Description -->
+      <div class="description-box" id="result-description"></div>
+
+      <!-- Disclaimer -->
+      <div class="disclaimer" id="result-disclaimer"></div>
+
+      <!-- Reset -->
+      <button id="reset-btn">← Upload another image</button>
+
+    </div>
+  </div>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer>
+    <p>Built with FastAPI · TensorFlow · DenseNet121</p>
+    <p style="margin-top:0.3rem">For educational purposes only · Not for clinical use</p>
+  </footer>
+
+  <!-- ══════════════════════════════════════════════════════════
+       JavaScript
+  ══════════════════════════════════════════════════════════════ -->
+  <script>
+    const fileInput      = document.getElementById('file-input');
+    const uploadZone     = document.getElementById('upload-zone');
+    const previewCont    = document.getElementById('preview-container');
+    const previewImg     = document.getElementById('preview-img');
+    const fileNameEl     = document.getElementById('file-name');
+    const predictBtn     = document.getElementById('predict-btn');
+    const loader         = document.getElementById('loader');
+    const errorBox       = document.getElementById('error-box');
+    const resultCont     = document.getElementById('result-container');
+    const resetBtn       = document.getElementById('reset-btn');
+
+    const CLASS_COLORS = {
+      "COVID19"   : "#E74C3C",
+      "NORMAL"    : "#2ECC71",
+      "PNEUMONIA" : "#E67E22"
+    };
+
+    // ── Drag & Drop ─────────────────────────────────────────────
+    uploadZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+
+    // ── File Input Change ────────────────────────────────────────
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    function handleFile(file) {
+      // Validate type
+      if (!['image/jpeg','image/jpg','image/png'].includes(file.type)) {
+        showError('❌ Invalid file type. Please upload a JPEG or PNG image.');
+        return;
+      }
+      // Validate size (10 MB)
+      if (file.size > 10 * 1024 * 1024) {
+        showError('❌ File too large. Maximum size is 10 MB.');
+        return;
+      }
+
+      hideError();
+      hideResult();
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImg.src = e.target.result;
+        previewCont.style.display = 'block';
+        fileNameEl.textContent = `📄 ${file.name}  (${(file.size/1024).toFixed(1)} KB)`;
+      };
+      reader.readAsDataURL(file);
+
+      predictBtn.disabled = false;
+      predictBtn.dataset.file = '';
+      predictBtn._file = file;
+    }
+
+    // ── Predict ──────────────────────────────────────────────────
+    predictBtn.addEventListener('click', async () => {
+      const file = predictBtn._file;
+      if (!file) return;
+
+      // UI: loading state
+      predictBtn.disabled = true;
+      loader.style.display = 'block';
+      hideError();
+      hideResult();
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res  = await fetch('/predict', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(`❌ Server error: ${data.detail || 'Unknown error'}`);
+          return;
+        }
+
+        renderResult(data);
+
+      } catch (err) {
+        showError('❌ Network error. Is the FastAPI server running?');
+      } finally {
+        loader.style.display = 'none';
+        predictBtn.disabled = false;
+      }
+    });
+
+    // ── Render Result ────────────────────────────────────────────
+    function renderResult(data) {
+      const color = data.color || CLASS_COLORS[data.predicted_class] || '#60a5fa';
+
+      // Header
+      document.getElementById('result-emoji').textContent = data.emoji;
+      document.getElementById('result-class').textContent = data.predicted_class;
+      document.getElementById('result-class').style.color = color;
+      document.getElementById('result-confidence').textContent =
+        `Confidence: ${data.confidence.toFixed(1)}%`;
+      document.getElementById('result-header').style.background =
+        `${color}18`;
+      document.getElementById('result-header').style.border =
+        `1px solid ${color}40`;
+
+      // Probability bars
+      const barsContainer = document.getElementById('prob-bars');
+      barsContainer.innerHTML = '';
+      const probs = data.all_probabilities;
+
+      Object.entries(probs)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([cls, prob]) => {
+          const barColor = CLASS_COLORS[cls] || '#60a5fa';
+          const isCurrent = cls === data.predicted_class;
+          barsContainer.innerHTML += `
+            <div class="prob-item">
+              <div class="prob-label-row">
+                <span style="font-weight:${isCurrent ? '700' : '400'};
+                             color:${isCurrent ? barColor : '#cbd5e1'}">
+                  ${cls}
+                </span>
+                <span style="color:${isCurrent ? barColor : '#94a3b8'}">
+                  ${prob.toFixed(2)}%
+                </span>
+              </div>
+              <div class="prob-bar-bg">
+                <div class="prob-bar-fill"
+                     style="width:0%; background:${barColor};"
+                     data-width="${prob}">
+                </div>
+              </div>
+            </div>`;
+        });
+
+      // Animate bars after render
+      setTimeout(() => {
+        document.querySelectorAll('.prob-bar-fill').forEach(bar => {
+          bar.style.width = `${bar.dataset.width}%`;
+        });
+      }, 50);
+
+      // Description & Disclaimer
+      document.getElementById('result-description').textContent = data.description;
+      document.getElementById('result-disclaimer').textContent  = data.disclaimer;
+
+      // Show result section
+      resultCont.style.display = 'block';
+    }
+
+    // ── Reset ────────────────────────────────────────────────────
+    resetBtn.addEventListener('click', () => {
+      fileInput.value        = '';
+      predictBtn._file       = null;
+      predictBtn.disabled    = true;
+      previewCont.style.display = 'none';
+      previewImg.src         = '';
+      hideResult();
+      hideError();
+    });
+
+    function showError(msg) {
+      errorBox.textContent     = msg;
+      errorBox.style.display   = 'block';
+    }
+    function hideError() { errorBox.style.display = 'none'; }
+    function hideResult() { resultCont.style.display = 'none'; }
+  </script>
+</body>
+</html>
