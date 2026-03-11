@@ -263,4 +263,3 @@ Form-data: file=@your_xray.png
 Developed by: **Haroon Khan**  
 Project type: Deep Learning Lab (Transfer Learning + Deployment)
 
-If you want, I can tailor this README into a GitHub-ready version with badges, screenshots placeholders, and a “Results” section that includes your plots (confusion matrix, ROC curves, Grad-CAM).
