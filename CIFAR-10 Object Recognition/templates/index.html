@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CIFAR-10 Object Recognition</title>
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f1117;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ────────────────────────────────────────────────────────── */
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, #1a1d2e, #252840);
+      padding: 24px 40px;
+      text-align: center;
+      border-bottom: 1px solid #2e3250;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #6c63ff, #48cae4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p {
+      color: #9095b8;
+      margin-top: 6px;
+      font-size: 0.95rem;
+    }
+
+    /* ── Main Layout ───────────────────────────────────────────────────── */
+    main {
+      width: 100%;
+      max-width: 960px;
+      padding: 36px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ── Card ──────────────────────────────────────────────────────────── */
+    .card {
+      background: #1a1d2e;
+      border: 1px solid #2e3250;
+      border-radius: 16px;
+      padding: 28px;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      color: #9095b8;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    /* ── Upload Zone ───────────────────────────────────────────────────── */
+    #drop-zone {
+      border: 2px dashed #3b3f6e;
+      border-radius: 12px;
+      padding: 48px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: #13152a;
+    }
+    #drop-zone:hover, #drop-zone.dragover {
+      border-color: #6c63ff;
+      background: #1c1f38;
+      transform: scale(1.01);
+    }
+    #drop-zone .upload-icon { font-size: 3.5rem; margin-bottom: 12px; }
+    #drop-zone p {
+      color: #9095b8;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+    #drop-zone span { color: #6c63ff; font-weight: 600; }
+    #file-input { display: none; }
+
+    /* ── Predict Button ────────────────────────────────────────────────── */
+    #predict-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6c63ff, #48cae4);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+      margin-top: 16px;
+      letter-spacing: 0.03em;
+    }
+    #predict-btn:hover   { opacity: 0.9; }
+    #predict-btn:active  { transform: scale(0.98); }
+    #predict-btn:disabled {
+      background: #2e3250;
+      color: #555;
+      cursor: not-allowed;
+    }
+
+    /* ── Preview ───────────────────────────────────────────────────────── */
+    #preview-section {
+      display: none;
+      text-align: center;
+    }
+    #preview-img {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 10px;
+      border: 2px solid #3b3f6e;
+      image-rendering: pixelated;
+      margin: 0 auto;
+      display: block;
+    }
+    #file-name {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #9095b8;
+    }
+
+    /* ── Result Section ────────────────────────────────────────────────── */
+    #result-section { display: none; }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 20px;
+      background: linear-gradient(135deg, #1c1f38, #252840);
+      border-radius: 12px;
+      border: 1px solid #3b3f6e;
+    }
+    .result-emoji  { font-size: 3.5rem; }
+    .result-class  {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #6c63ff, #48cae4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .result-conf {
+      font-size: 0.95rem;
+      color: #9095b8;
+      margin-top: 4px;
+    }
+    .result-conf span {
+      color: #48cae4;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* ── Probability Bars ──────────────────────────────────────────────── */
+    .prob-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .prob-item {
+      display: grid;
+      grid-template-columns: 110px 1fr 56px;
+      align-items: center;
+      gap: 10px;
+    }
+    .prob-label {
+      font-size: 0.88rem;
+      color: #c0c4e0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prob-bar-bg {
+      height: 10px;
+      background: #2e3250;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s ease;
+      background: linear-gradient(90deg, #6c63ff, #48cae4);
+    }
+    .prob-bar-fill.top {
+      background: linear-gradient(90deg, #f7971e, #ffd200);
+    }
+    .prob-value {
+      font-size: 0.85rem;
+      color: #9095b8;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Loader ────────────────────────────────────────────────────────── */
+    #loader {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 4px solid #2e3250;
+      border-top-color: #6c63ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error Box ─────────────────────────────────────────────────────── */
+    #error-box {
+      display: none;
+      background: #2a1a1a;
+      border: 1px solid #a03030;
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: #ff8080;
+      font-size: 0.9rem;
+      margin-top: 12px;
+    }
+
+    /* ── Classes Grid (supported classes) ─────────────────────────────── */
+    .classes-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .class-chip {
+      background: #13152a;
+      border: 1px solid #2e3250;
+      border-radius: 10px;
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: #9095b8;
+    }
+    .class-chip .chip-emoji { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+
+    /* ── Footer ────────────────────────────────────────────────────────── */
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      color: #4a4f72;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    /* ── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.4rem; }
+      .classes-grid { grid-template-columns: repeat(2, 1fr); }
+      .prob-item { grid-template-columns: 90px 1fr 48px; }
+      .result-class { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ────────────────────────────────────────────────────────────── -->
+<header>
+  <h1>🔍 CIFAR-10 Object Recognition</h1>
+  <p>CNN trained from scratch · 10 classes · TensorFlow / Keras</p>
+</header>
+
+<main>
+
+  <!-- ── Upload Card ───────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2>Upload Image</h2>
+
+    <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+      <div class="upload-icon">📁</div>
+      <p>Drag & drop an image here, or <span>click to browse</span></p>
+      <p style="font-size:0.8rem; margin-top:8px;">Supports: JPEG, PNG, WEBP</p>
+    </div>
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" />
+
+    <!-- Preview -->
+    <div id="preview-section" style="margin-top:20px;">
+      <img id="preview-img" src="" alt="Preview" />
+      <p id="file-name"></p>
+    </div>
+
+    <!-- Error -->
+    <div id="error-box"></div>
+
+    <button id="predict-btn" disabled>
+      🚀 Classify Image
+    </button>
+  </div>
+
+  <!-- ── Loader ────────────────────────────────────────────────────────────── -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <p style="color:#9095b8;">Analyzing image...</p>
+  </div>
+
+  <!-- ── Result Card ───────────────────────────────────────────────────────── -->
+  <div class="card" id="result-section">
+    <h2>Prediction Result</h2>
+
+    <div class="result-header">
+      <div class="result-emoji" id="res-emoji"></div>
+      <div>
+        <div class="result-class" id="res-class"></div>
+        <div class="result-conf">
+          Confidence: <span id="res-conf"></span>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-bottom:14px;">All Class Probabilities</h2>
+    <div class="prob-list" id="prob-list"></div>
+  </div>
+
+  <!-- ── Supported Classes Card ────────────────────────────────────────────── -->
+  <div class="card">
+    <h2>Supported Classes</h2>
+    <div class="classes-grid">
+      {% for name in class_names %}
+      <div class="class-chip">
+        <span class="chip-emoji">
+          {% if name == "Airplane"    %}✈️
+          {% elif name == "Automobile"%}🚗
+          {% elif name == "Bird"      %}🐦
+          {% elif name == "Cat"       %}🐱
+          {% elif name == "Deer"      %}🦌
+          {% elif name == "Dog"       %}🐶
+          {% elif name == "Frog"      %}🐸
+          {% elif name == "Horse"     %}🐴
+          {% elif name == "Ship"      %}🚢
+          {% elif name == "Truck"     %}🚛
+          {% endif %}
+        </span>
+        {{ name }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  CIFAR-10 CNN Lab · Built with FastAPI + TensorFlow · Haroon Khan
+</footer>
+
+<!-- ── JavaScript ─────────────────────────────────────────────────────────── -->
+<script>
+  const dropZone   = document.getElementById("drop-zone");
+  const fileInput  = document.getElementById("file-input");
+  const previewSec = document.getElementById("preview-section");
+  const previewImg = document.getElementById("preview-img");
+  const fileName   = document.getElementById("file-name");
+  const predictBtn = document.getElementById("predict-btn");
+  const loader     = document.getElementById("loader");
+  const resultSec  = document.getElementById("result-section");
+  const errorBox   = document.getElementById("error-box");
+
+  let selectedFile = null;
+
+  // ── Drag & Drop ─────────────────────────────────────────────────────────────
+  dropZone.addEventListener("dragover",  (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
+  dropZone.addEventListener("dragleave", ()  => dropZone.classList.remove("dragover"));
+  dropZone.addEventListener("drop",      (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+
+  // ── File Input ───────────────────────────────────────────────────────────────
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+  });
+
+  // ── Handle Selected File ─────────────────────────────────────────────────────
+  function handleFile(file) {
+    const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      showError("❌ Invalid file type. Please upload a JPEG or PNG image.");
+      return;
+    }
+    hideError();
+    selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      previewSec.style.display = "block";
+      fileName.textContent = `📄 ${file.name}  (${(file.size / 1024).toFixed(1)} KB)`;
+    };
+    reader.readAsDataURL(file);
+
+    resultSec.style.display = "none";
+    predictBtn.disabled = false;
+  }
+
+  // ── Predict ──────────────────────────────────────────────────────────────────
+  predictBtn.addEventListener("click", async () => {
+    if (!selectedFile) return;
+
+    predictBtn.disabled = true;
+    loader.style.display = "block";
+    resultSec.style.display = "none";
+    hideError();
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await fetch("/predict", { method: "POST", body: formData });
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError(`❌ Server error: ${data.detail || "Unknown error."}`);
+        return;
+      }
+      renderResult(data);
+
+    } catch (err) {
+      showError("❌ Could not connect to the server. Is it running?");
+    } finally {
+      loader.style.display = "none";
+      predictBtn.disabled = false;
+    }
+  });
+
+  // ── Render Result ────────────────────────────────────────────────────────────
+  function renderResult(data) {
+    document.getElementById("res-emoji").textContent = data.emoji;
+    document.getElementById("res-class").textContent = data.predicted_class;
+    document.getElementById("res-conf").textContent  = `${data.confidence}%`;
+
+    const probList = document.getElementById("prob-list");
+    probList.innerHTML = "";
+
+    data.all_probs.forEach((item, idx) => {
+      const isTop = idx === 0;
+      const row = document.createElement("div");
+      row.className = "prob-item";
+      row.innerHTML = `
+        <div class="prob-label">${item.emoji} ${item.class}</div>
+        <div class="prob-bar-bg">
+          <div class="prob-bar-fill ${isTop ? 'top' : ''}"
+               style="width: ${item.probability}%"></div>
+        </div>
+        <div class="prob-value">${item.probability}%</div>
+      `;
+      probList.appendChild(row);
+    });
+
+    resultSec.style.display = "block";
+    resultSec.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // ── Error Helpers ─────────────────────────────────────────────────────────────
+  function showError(msg) {
+    errorBox.textContent  = msg;
+    errorBox.style.display = "block";
+  }
+  function hideError() {
+    errorBox.style.display = "none";
+  }
+</script>
+</body>
+</html>
