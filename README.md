@@ -1,6 +1,6 @@
 
 
-# 📘 Artificial Intelligence Labs
+# 📘 Artificial Intelligence Lab Projects
 
 **Practical AI / ML / DL lab implementations built on real datasets with complete pipelines, preprocessing, scaling, model training, evaluation, visualization, and FastAPI model deployment.**
 
