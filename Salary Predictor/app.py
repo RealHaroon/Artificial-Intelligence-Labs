@@ -5,13 +5,15 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import joblib
 import numpy as np
+from pathlib import Path
 
 app = FastAPI(title="Salary Prediction API")
 
 # Setup templates directory
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
-model = joblib.load('D:\\Github\\Artificial-Intelligence-Labs\\Salary Predictor\\model\\salary_model.pkl')
+model = joblib.load(BASE_DIR / "model" / "salary_model.pkl")
 
 class ExperienceInput(BaseModel):
     years_experience: float

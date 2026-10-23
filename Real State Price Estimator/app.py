@@ -1,18 +1,20 @@
 import joblib
 import numpy as np
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-# 1. Load the model from your specific path
-MODEL_PATH = r"D:\\Talha\\Real state Price Estimator\\model\\house_model.joblib"
+# 1. Load the model (path relative to this file)
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "model" / "house_model.joblib"
 model = joblib.load(MODEL_PATH)
 
 app = FastAPI()
 
 # 2. Setup templates folder for UI
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # Schema for validation
 class HouseData(BaseModel):

@@ -9,14 +9,16 @@ A simple Convolutional Neural Network (CNN) that classifies thin blood smear cel
 
 ## Dataset
 - Kaggle: **Cell Images for Detecting Malaria** (two folders/classes: `Parasitized/` and `Uninfected/`).  
-  Link: https://www.kaggle.com/datasets/iarunava/cell-images-for-detecting-malaria [web:31]
+  Link: https://www.kaggle.com/datasets/iarunava/cell-images-for-detecting-malaria
+- 27,558 images in total, roughly balanced between the two classes.
 
 ## Model (What & Why)
 - **CNN** is better than a basic ANN/MLP for images because it preserves spatial structure and learns local patterns (edges/textures) using convolution filters.
 - Architecture used (simple + fast):
-  - 3 × (Conv2D + MaxPooling2D)
-  - Flatten → Dense(128) → Dropout
-  - Output: `sigmoid` (binary probability)
+  - 3 × (Conv2D + MaxPooling2D) with 32 → 64 → 128 filters (3×3, `same` padding, ReLU)
+  - Flatten → Dense(128, ReLU) → Dropout
+  - Output: Dense(1, `sigmoid`) = P(Parasitized)
+  - ~1.14M trainable parameters
 
 ## Training Pipeline (Creation Process)
 1. Load images directly from folders using Keras directory loader.
@@ -24,11 +26,11 @@ A simple Convolutional Neural Network (CNN) that classifies thin blood smear cel
 3. Split:
    - Train (80%)
    - Validation/Test made from remaining 20% (then split roughly 50/50 by batches)
-4. Train with Adam + Binary Cross-Entropy and EarlyStopping on validation AUC.
+4. Train with Adam + Binary Cross-Entropy (up to 8 epochs, Kaggle Tesla T4 GPU) and EarlyStopping on validation AUC.
 5. Save artifacts for inference:
-   - `malaria_cnn.keras` (native Keras format)
-   - `malaria_savedmodel/` (exported SavedModel directory)
-   - `class_names.json` (label mapping)
+   - `malaria_cnn.keras` (native Keras format, used by the app)
+   - `malaria_savedmodel/` (exported SavedModel directory — produced in the notebook, not committed to this repo)
+   - `class_names.json` (label mapping: `["Uninfected", "Parasitized"]`)
 
 ## Evaluation (Why it’s good)
 Test results (threshold = 0.5):
@@ -43,33 +45,49 @@ Why these metrics matter:
 ## FastAPI Deployment
 The project includes a FastAPI app with:
 - `GET /` → HTML UI (Jinja2 template)
-- `POST /predict` → upload an image and receive `{label, probability}`
+- `POST /predict` → upload a PNG/JPG image (form field `file`)
 
-Returned probability is `P(Parasitized)` from the model sigmoid output.
+Example response:
+```json
+{
+  "label": "Parasitized",
+  "probability_parasitized": 0.9731,
+  "threshold": 0.5,
+  "disclaimer": "Educational only — not for medical diagnosis."
+}
+```
+
+`probability_parasitized` is the model's sigmoid output. Non-image uploads return `415`, unreadable images return `400`.
 
 ## Folder Structure
 
-```bash
-Malaria-Cell-Classification-System/
-├── __pycache__/
+```text
+Malaria Cell Classification System/
 ├── model/
 │   ├── class_names.json
 │   └── malaria_cnn.keras
 ├── notebook/
 │   └── Malaria_Cell_Classification.ipynb
+├── slides/
+│   └── Malaria Detection CNN.pptx
 ├── templates/
 │   └── index.html
+├── ss.png                 # UI screenshot
 ├── app.py
 └── readme.md
 ```
 
 ## How to Run (Local API)
-```bash
-cd app
-pip install fastapi uvicorn tensorflow pillow jinja2 python-multipart
-uvicorn main:app --reload --port 8000
-```
-Open: http://127.0.0.1:8000
+
+1. Install dependencies:
+   ```bash
+   pip install fastapi uvicorn tensorflow pillow jinja2 python-multipart numpy
+   ```
+2. Start the server from inside this folder:
+   ```bash
+   uvicorn app:app --reload --port 8000
+   ```
+3. Open http://127.0.0.1:8000 (Swagger docs at `/docs`).
 
 ## Disclaimer
 **Educational only.** This model is a learning project and must not be used for medical diagnosis or clinical decision-making without proper validation, approvals, and domain expert review.

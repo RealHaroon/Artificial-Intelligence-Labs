@@ -15,7 +15,11 @@ Diabetes Diagnostic Tool/
 │   └── diabetes_classification_model.pkl  # Trained model artifact
 ├── templates/
 │   └── index.html                # Web UI for predictions
+├── slides/
+│   └── Diabetes Prediction.pptx  # Presentation
 ├── app.py                        # FastAPI deployment
+├── cheatsheet.pdf                # Lab cheatsheet
+├── ss.png                        # UI screenshot
 ├── testCase.txt                  # Test cases for API validation
 └── requirements.txt              # Python dependencies
 ```
@@ -54,6 +58,9 @@ Open and execute `notebook/Diabetes Classification.ipynb` to:
 - Save model artifact as `.pkl`
 
 ### 3. Deploy the API
+
+From inside this folder:
+
 ```bash
 uvicorn app:app --reload
 ```
@@ -77,14 +84,25 @@ Use the web interface at `http://127.0.0.1:8000` or test with example inputs fro
 }
 ```
 
-**Response**:
+**Response** (illustrative):
 ```json
 {
-  "diabetes_probability": 0.63,
-  "threshold_used": 0.42,
+  "diabetes_probability": 0.41,
+  "threshold_used": 0.2498,
   "predicted_class": 1
 }
 ```
+
+## 📈 Results (Test Set, 116 patients)
+
+Best regularization strength from `GridSearchCV`: **C = 0.1**. The threshold was chosen on the validation set to maximize F1 (validation recall 0.95).
+
+| Threshold | Accuracy | Precision | Recall | F1 |
+|-----------|----------|-----------|--------|----|
+| 0.50 (default) | 0.759 | 0.724 | 0.512 | 0.600 |
+| **0.25 (tuned)** | **0.767** | 0.625 | **0.854** | **0.722** |
+
+Lowering the threshold raised recall from 51% to 85% — the model now catches most diabetic patients — at the cost of more false alarms.
 
 ## 📊 Key Concepts
 
@@ -159,5 +177,7 @@ Students will understand:
 
 ***
 
-**Author**: ML Lab -  University Level  
-**License**: Educational Use
+**Author**: M Haroon Abbas — [GitHub @RealHaroon](https://github.com/RealHaroon)  
+**License**: Educational Use  
+
+> ⚠️ Educational only — not a medical device and not for clinical diagnosis.

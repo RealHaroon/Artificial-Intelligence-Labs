@@ -1,58 +1,111 @@
+# 🏘️ Real Estate Price Estimator — XGBoost
 
-# 🏠 Real Estate Price Estimator - ML Lab
+An end-to-end Machine Learning lab that predicts California house prices from 8 geographic and demographic features. An **XGBoost Regressor** is served through a **FastAPI** backend with a responsive Bootstrap UI.
 
-
-An end-to-end Machine Learning project that predicts California house prices based on 8 geographic and demographic features. The project serves an **XGBoost Regressor** model through a **FastAPI** backend and includes a clean, responsive frontend UI.
+---
 
 ## 🚀 Tech Stack
-* **Machine Learning:** `scikit-learn`, `xgboost`, `pandas`, `numpy`
-* **Backend:** `FastAPI`, `uvicorn`, `pydantic`
-* **Frontend:** `HTML5`, `Bootstrap 5`, `Vanilla JavaScript` (Fetch API)
-* **Serialization:** `joblib`
+
+- **Machine Learning:** `scikit-learn`, `xgboost`, `numpy`
+- **Backend:** `FastAPI`, `uvicorn`, `pydantic`
+- **Frontend:** HTML5, Bootstrap 5, Vanilla JavaScript (Fetch API)
+- **Serialization:** `joblib`
+
+---
+
+## 📁 Project Structure
+
+```text
+Real State Price Estimator/
+├── app.py                      # FastAPI backend (UI + /predict)
+├── model/
+│   └── house_model.joblib      # Trained XGBRegressor
+├── notebook/
+│   └── notebook.ipynb          # Training notebook
+├── templates/
+│   └── index.html              # Bootstrap UI
+├── ss.png                      # UI screenshot
+└── readme.md
+```
+
+---
+
+## 📊 Dataset
+
+**California Housing** (`sklearn.datasets.fetch_california_housing`) — 20,640 block groups from the 1990 U.S. census.
+
+| Feature | Description |
+|---------|-------------|
+| `median_income` | Median income in the block (tens of thousands USD) |
+| `house_age` | Median house age |
+| `avg_rooms` | Average rooms per household |
+| `avg_bedrooms` | Average bedrooms per household |
+| `population` | Block population |
+| `avg_occupancy` | Average household members |
+| `latitude` | Block latitude |
+| `longitude` | Block longitude |
+
+**Target:** median house value, in units of **$100,000**.
+
+---
+
+## 🔬 ML Pipeline
+
+1. Load the dataset with `fetch_california_housing()`.
+2. Split 80% train / 20% test (`random_state=42`).
+3. Train `XGBRegressor(n_estimators=100, learning_rate=0.1, max_depth=5)`.
+4. Evaluate with R².
+5. Save with `joblib`.
+
+---
+
+## 📈 Results
+
+| Metric | Value |
+|--------|-------|
+| Test R² | **0.8141** |
+
+Gradient-boosted trees capture the non-linear effect of location (latitude/longitude) and income, which a linear model would miss.
+
+---
 
 ## ✨ Features
-* **High Accuracy:** Utilizes an optimized XGBoost model ($R^2$ Score > 0.81).
-* **Real-time Inference:** Fast API endpoints capable of serving predictions in milliseconds.
-* **Data Validation:** Strict input validation using Pydantic schemas to ensure model stability.
-* **Interactive UI:** A single-page web interface to test predictions without touching code.
-* **Swagger Documentation:** Auto-generated API docs available at `/docs`.
 
-## 🛠️ Local Installation & Setup
+- **Real-time inference** with millisecond responses.
+- **Input validation** through a Pydantic schema.
+- **Interactive UI** to test predictions without writing code.
+- **Swagger docs** generated at `/docs`.
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/RealHaroon/real-estate-price-estimator.git](https://github.com/RealHaroon/real-estate-price-estimator.git)
-   cd real-estate-price-estimator
+---
 
-```
+## 🛠️ How to Run
 
-2. **Install the required dependencies:**
+### 1. Install dependencies
+
 ```bash
-pip install -r requirements.txt
-
+pip install fastapi uvicorn jinja2 joblib numpy scikit-learn xgboost
 ```
 
+### 2. Start the server
 
-3. **Run the FastAPI server:**
+From inside this folder:
+
 ```bash
 uvicorn app:app --reload
-
 ```
 
+- **Web UI:** http://127.0.0.1:8000
+- **Swagger docs:** http://127.0.0.1:8000/docs
 
-4. **Access the application:**
-* **Web UI:** Open `http://127.0.0.1:8000` in your browser.
-* **API Docs:** Open `http://127.0.0.1:8000/docs` to test the endpoints directly.
+---
 
-
-
-## 📡 API Endpoint Details
+## 📡 API Reference
 
 ### `POST /predict`
 
-Accepts a JSON payload with house features and returns the estimated price in USD.
+Accepts the 8 features as JSON and returns the estimated price in USD (the model output × 100,000).
 
-**Request Body:**
+**Request:**
 
 ```json
 {
@@ -65,24 +118,19 @@ Accepts a JSON payload with house features and returns the estimated price in US
   "latitude": 37.88,
   "longitude": -122.23
 }
-
 ```
 
-**Response:**
+**Response** (illustrative):
 
 ```json
 {
   "price": "$452,600.00"
 }
-
 ```
-
-## 👨‍💻 Author
-
-**M Haroon Abbas** BSCS | OCI AI & Generative AI Certified Professional
-
-GitHub: [@RealHaroon](https://github.com/RealHaroon)
-
 
 ---
 
+## 👨‍💻 Author
+
+**M Haroon Abbas** — BSCS | OCI AI & Generative AI Certified Professional
+[GitHub @RealHaroon](https://github.com/RealHaroon)

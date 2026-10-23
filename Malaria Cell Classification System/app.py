@@ -1,6 +1,7 @@
 import io
 import json
 import numpy as np
+from pathlib import Path
 from PIL import Image
 
 import tensorflow as tf
@@ -10,13 +11,14 @@ from fastapi.templating import Jinja2Templates
 
 IMG_SIZE = (64, 64)
 THRESHOLD = 0.5
+BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(title="Malaria Detection (Educational)")
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # Load artifacts once at startup
-model = tf.keras.models.load_model("D:\\Github\\Artificial-Intelligence-Labs\\Malaria Cell Classification System\\model\\malaria_cnn.keras")
-with open("D:\\Github\\Artificial-Intelligence-Labs\\Malaria Cell Classification System\\model\\class_names.json", "r") as f:
+model = tf.keras.models.load_model(BASE_DIR / "model" / "malaria_cnn.keras")
+with open(BASE_DIR / "model" / "class_names.json", "r") as f:
     CLASS_NAMES = json.load(f)  # ["Uninfected", "Parasitized"]
 
 

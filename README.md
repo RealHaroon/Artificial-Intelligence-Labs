@@ -1,74 +1,121 @@
-
 # 🧠 Artificial Intelligence Labs
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange?logo=jupyter)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange?logo=tensorflow)
 ![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-Machine%20Learning-blue?logo=scikit-learn)
+![XGBoost](https://img.shields.io/badge/XGBoost-Regression-green)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Deployment-009688?logo=fastapi)
 
-Welcome to the **Artificial Intelligence Labs** repository! This repository serves as a practical, hands-on portfolio showcasing end-to-end Machine Learning (ML) and Deep Learning (DL) pipelines. 
-
-The primary focus here is to move beyond isolated Jupyter Notebooks. These labs demonstrate the complete AI lifecycle: from raw data ingestion and Exploratory Data Analysis (EDA), through model training and hyperparameter tuning, all the way to model serialization and REST API deployment.
+A hands-on portfolio of **11 end-to-end Machine Learning and Deep Learning labs**. Every lab goes beyond a standalone notebook: data is explored and preprocessed, a model is trained and evaluated, the trained artifact is saved, and the model is served through a **FastAPI** app with a browser UI.
 
 ---
 
 ## 📑 Table of Contents
-1. [Core Methodology](#-core-methodology)
-2. [Project Breakdown](#-project-breakdown)
-3. [Tech Stack & Tools](#-tech-stack--tools)
-4. [Repository Structure](#-repository-structure)
-5. [Getting Started](#-getting-started)
-6. [API Deployment](#-api-deployment)
-7. [Author](#-author)
+
+1. [Projects at a Glance](#-projects-at-a-glance)
+2. [Core Methodology](#️-core-methodology)
+3. [Project Breakdown](#-project-breakdown)
+4. [Tech Stack](#️-tech-stack)
+5. [Repository Structure](#-repository-structure)
+6. [Getting Started](#-getting-started)
+7. [Running a Lab](#-running-a-lab)
+8. [Known Caveats](#️-known-caveats)
+9. [Author](#-author)
+
+---
+
+## 📊 Projects at a Glance
+
+| # | Lab | Task | Model | Dataset | Key Result |
+|---|-----|------|-------|---------|------------|
+| 1 | [Chest X-Ray Classifier](./Chest%20X-Ray%20Classifier%20COVID-19%20Pneumonia%20&%20Normal%20Detection/) | 3-class image classification | DenseNet121 (transfer learning) | Kaggle Chest X-ray (COVID-19 & Pneumonia) | Acc **92.7%**, Macro-F1 **0.934**, AUC **0.994** |
+| 2 | [Malaria Cell Classification](./Malaria%20Cell%20Classification%20System/) | Binary image classification | Custom CNN | Kaggle Cell Images for Malaria | Acc **95.3%**, ROC-AUC **0.990** |
+| 3 | [CIFAR-10 Object Recognition](./CIFAR-10%20Object%20Recognition/) | 10-class image classification | Custom CNN + augmentation | CIFAR-10 | Test Acc **82.3%** |
+| 4 | [MNIST Digit Classifier](./MNIST%20Digit%20Classifier/) | 10-class digit recognition | Dense neural network | MNIST | Test Acc **97.8%** |
+| 5 | [Diabetes Diagnostic Tool](./Diabetes%20Diagnostic%20Tool/) | Binary classification | Logistic Regression + threshold tuning | Pima Indians Diabetes | Recall **0.85** @ tuned threshold |
+| 6 | [Loan Approval Prediction](./Loan%20Approval%20Prediction/) | Binary classification | Decision Tree | Kaggle Loan Prediction | Acc **82.9%** |
+| 7 | [Iris Species Classifier](./Iris%20Species%20Classifier/) | 3-class classification | KNN (k=3) | Iris (scikit-learn) | Test Acc **95.7%** |
+| 8 | [SMS Spam Filter](./SMS%20Spam%20Filter/) | Text classification (NLP) | TF-IDF + Multinomial Naive Bayes | SMS Spam Collection | Acc **96.7%** |
+| 9 | [House Price Predictor](./House%20Price%20Predictor/) | Regression | Linear Regression | Ames Housing | Test R² **0.77** |
+| 10 | [Real Estate Price Estimator](./Real%20State%20Price%20Estimator/) | Regression | XGBoost Regressor | California Housing | R² **0.81** |
+| 11 | [Salary Predictor](./Salary%20Predictor/) | Simple regression | Linear Regression | Salary vs. Experience | R² **0.90** |
+
+Each lab folder has its own README with the full pipeline, results and API reference.
 
 ---
 
 ## 🏗️ Core Methodology
-Each project in this repository generally adheres to the following workflow:
-1. **Data Preprocessing:** Handling missing values, outlier detection, and data normalization/standardization.
-2. **Feature Engineering:** Encoding categorical variables and selecting optimal features.
-3. **Model Development:** Training baseline models and scaling up to complex algorithms (Ensemble methods, CNNs).
-4. **Evaluation:** Utilizing accuracy, precision, recall, F1-score, and confusion matrices to validate model performance.
-5. **Deployment:** Wrapping the optimized, serialized model (Pickle/Joblib or H5) into a FastAPI backend to serve real-time predictions via HTTP endpoints.
+
+Each lab follows the same lifecycle:
+
+1. **Data Exploration (EDA):** distributions, class balance, correlations, missing values.
+2. **Preprocessing:** imputation, scaling/normalization, encoding, image resizing and augmentation, text vectorization.
+3. **Model Development:** a baseline model, then tuning (grid search, validation-based selection, fine-tuning for transfer learning).
+4. **Evaluation:** metrics chosen for the task — accuracy, precision, recall, F1, ROC-AUC and confusion matrices for classification; R² and RMSE for regression.
+5. **Serialization:** models saved as `.pkl` / `.joblib` (scikit-learn, XGBoost) or `.keras` / `.h5` (TensorFlow).
+6. **Deployment:** a FastAPI backend that loads the saved model and serves predictions through a JSON endpoint and an HTML UI.
 
 ---
 
 ## 🔬 Project Breakdown
 
 ### 🧠 Deep Learning & Computer Vision
-* 🫁 **Chest X-Ray Classifier (COVID-19 & Pneumonia):** A Convolutional Neural Network (CNN) trained on medical imaging to detect and classify lung infections.
-* 🦠 **Malaria Cell Classification System:** An automated diagnostic tool using deep learning to identify parasitized cells in blood smear images.
-* 🖼️ **CIFAR-10 Object Recognition:** A multi-class image classification model predicting objects across 10 distinct categories.
-* 🔢 **MNIST Digit Classifier:** A foundational computer vision project recognizing handwritten digits with high accuracy.
+
+- 🫁 **Chest X-Ray Classifier** — Classifies chest X-rays as COVID19, PNEUMONIA or NORMAL using DenseNet121 with two-phase fine-tuning, class weighting for imbalance, and Grad-CAM explainability.
+- 🦠 **Malaria Cell Classification System** — A lightweight 3-block CNN that flags parasitized vs. uninfected cells in blood smear images (64×64 input).
+- 🖼️ **CIFAR-10 Object Recognition** — A CNN built from scratch with BatchNorm, Dropout and on-the-fly augmentation, served through a drag-and-drop UI.
+- 🔢 **MNIST Digit Classifier** — Draw a digit on a canvas in the browser; the backend crops, centers and resizes the drawing MNIST-style before predicting.
 
 ### 📊 Machine Learning (Classification & Regression)
-* 🏥 **Diabetes Diagnostic Tool:** A predictive classification pipeline to determine the likelihood of diabetes based on medical predictor variables.
-* 🏠 **House Price Predictor & Real Estate Estimator:** End-to-end regression pipelines utilizing feature scaling to predict property values.
-* 💰 **Loan Approval Prediction:** A financial risk assessment model classifying whether a loan should be approved based on applicant history.
-* 🌸 **Iris Species Classifier:** A classic machine learning implementation establishing a solid baseline for multi-class prediction.
-* 📱 **SMS Spam Filter:** Natural Language Processing (NLP) techniques applied to classify text messages as spam or legitimate.
-* 💼 **Salary Predictor:** A regression model analyzing income trends based on experience and feature data.
+
+- 🏥 **Diabetes Diagnostic Tool** — Logistic Regression pipeline that treats zeros as missing values and tunes the decision threshold to favor recall.
+- 💰 **Loan Approval Prediction** — A Decision Tree inside a full scikit-learn `Pipeline` (imputation + one-hot encoding) so training and serving use identical preprocessing.
+- 🌸 **Iris Species Classifier** — StandardScaler + KNN pipeline with validation-based selection of `k`.
+- 📱 **SMS Spam Filter** — TF-IDF features with Multinomial Naive Bayes, returning a label and confidence score.
+- 🏠 **House Price Predictor** — Linear Regression on five key Ames Housing features.
+- 🏘️ **Real Estate Price Estimator** — XGBoost regressor on the 8-feature California Housing dataset.
+- 💼 **Salary Predictor** — Single-feature Linear Regression mapping years of experience to salary.
 
 ---
 
-## 🛠️ Tech Stack & Tools
+## 🛠️ Tech Stack
 
-* **Programming:** Python
-* **Data Manipulation & EDA:** NumPy, Pandas, Matplotlib, Seaborn
-* **Machine Learning:** Scikit-learn, XGBoost
-* **Deep Learning:** TensorFlow, Keras
-* **Web Framework / API:** FastAPI, Uvicorn
-* **Environment & Version Control:** Jupyter Notebook, Git
-* **Infrastructure / DevOps:** Docker, Windows Subsystem for Linux (WSL)
+| Area | Tools |
+|------|-------|
+| Language | Python |
+| Data & EDA | NumPy, Pandas, Matplotlib, Seaborn |
+| Machine Learning | Scikit-learn, XGBoost |
+| Deep Learning | TensorFlow / Keras |
+| Serving | FastAPI, Uvicorn, Pydantic, Jinja2 |
+| Frontend | HTML, CSS, Vanilla JavaScript, Bootstrap 5 |
+| Image processing | Pillow |
+| Serialization | joblib, pickle, Keras `.keras` / `.h5` |
+| Training environment | Jupyter Notebook, Kaggle Notebooks (GPU) |
 
 ---
 
 ## 📂 Repository Structure
 
+Most labs share the same layout:
+
+```text
+<Lab Name>/
+├── app.py              # FastAPI app (UI + prediction endpoint)
+├── data/               # Raw dataset (when not downloaded in the notebook)
+├── model/              # Saved model artifacts (House Price uses models/)
+├── notebook/           # Training notebook: EDA → training → evaluation → saving
+├── templates/          # index.html UI (Iris and Loan use template/)
+├── slides/             # Presentation deck (some labs)
+├── ss.png              # Screenshot of the UI (some labs)
+├── testCase.txt        # Sample inputs for manual testing (some labs)
+└── readme.md           # Lab documentation
+```
+
+Top level:
+
 ```text
 Artificial-Intelligence-Labs/
-│
 ├── Chest X-Ray Classifier COVID-19 Pneumonia & Normal Detection/
 ├── CIFAR-10 Object Recognition/
 ├── Diabetes Diagnostic Tool/
@@ -80,86 +127,105 @@ Artificial-Intelligence-Labs/
 ├── Real State Price Estimator/
 ├── Salary Predictor/
 ├── SMS Spam Filter/
-│
-├── main.py                   # FastAPI application entry point (if centralized)
-├── requirements.txt          # Python dependencies
-└── README.md                 # Project documentation
-````
+├── Genetic Algorithms.py   # Placeholder for upcoming Genetic Algorithms work (currently empty)
+├── main.py                 # Placeholder (currently empty)
+└── README.md
+```
 
------
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-  * Python 3.8 or higher installed.
-  * Git installed on your local machine.
+- Python 3.10 or higher (the Loan Approval app uses `str | None` type hints)
+- Git
 
 ### Installation
 
-1.  **Clone the repository:**
+1. **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/RealHaroon/Artificial-Intelligence-Labs.git](https://github.com/RealHaroon/Artificial-Intelligence-Labs.git)
+    git clone https://github.com/RealHaroon/Artificial-Intelligence-Labs.git
     cd Artificial-Intelligence-Labs
     ```
 
-2.  **Create and activate a virtual environment:**
+2. **Create and activate a virtual environment:**
 
     ```bash
     python -m venv venv
 
-    # On Windows:
+    # Windows
     venv\Scripts\activate
-    # On Linux/WSL/macOS:
-    source venv/bin/activate 
+    # Linux / macOS / WSL
+    source venv/bin/activate
     ```
 
-3.  **Install dependencies:**
+3. **Install dependencies.** There is no single root `requirements.txt`; this command covers every lab:
 
     ```bash
-    pip install -r requirements.txt
+    pip install numpy pandas scikit-learn xgboost joblib matplotlib seaborn \
+                tensorflow pillow fastapi uvicorn jinja2 python-multipart jupyter
     ```
 
-4.  **Explore the Notebooks:**
-    Launch Jupyter to view the training processes:
+    The Diabetes lab also ships its own pinned `requirements.txt`.
+
+4. **Explore the notebooks:**
 
     ```bash
     jupyter notebook
     ```
 
------
+---
 
-## 🌐 API Deployment
+## 🌐 Running a Lab
 
-Many of these models are designed to be production-ready. To spin up the FastAPI server and test the model endpoints locally:
+Each lab is a standalone FastAPI app. Run it from inside the lab folder:
 
-1.  Ensure your virtual environment is active.
-2.  Run the Uvicorn server:
-    ```bash
-    uvicorn main:app --reload
-    ```
-3.  Open your browser and navigate to `http://127.0.0.1:8000`.
-4.  **Interactive Docs:** FastAPI automatically generates interactive API documentation. Visit `http://127.0.0.1:8000/docs` to test the endpoints directly from your browser.
+```bash
+cd "Iris Species Classifier"
+uvicorn app:app --reload
+```
 
------
+Then open:
+
+- **Web UI:** http://127.0.0.1:8000
+- **Interactive API docs (Swagger):** http://127.0.0.1:8000/docs
+
+| Lab | Prediction endpoint | Input |
+|-----|---------------------|-------|
+| Chest X-Ray | `POST /predict` | Image upload (`file`) |
+| Malaria | `POST /predict` | Image upload (`file`) |
+| CIFAR-10 | `POST /predict` | Image upload (`file`) |
+| MNIST | `POST /predict` | JSON `{ "image": "<base64 PNG>" }` |
+| Diabetes | `POST /predict-diabetes` | JSON (8 clinical features) |
+| Loan Approval | `POST /predict-loan` | JSON (11 applicant fields) |
+| Iris | `POST /predict` | JSON (4 flower measurements) |
+| SMS Spam | `POST /predict` | JSON `{ "message": "..." }` |
+| House Price | `POST /predict` | HTML form (5 features) |
+| Real Estate | `POST /predict` | JSON (8 features) |
+| Salary | `POST /predict` | JSON `{ "years_experience": 5.5 }` |
+
+---
+
+## ⚠️ Known Caveats
+
+- **Paths:** Every app resolves its model and template paths relative to its own `app.py`, so labs run on any machine. Training notebooks may still save to the original author's absolute paths; adjust the save path before retraining.
+- **Medical labs are educational only.** The Chest X-Ray, Malaria and Diabetes models are not clinically validated and must not be used for diagnosis.
+- **Large files:** Model files (`.keras`, `.h5`, `.pkl`) and some datasets are committed directly, so the first clone may take a while.
+
+---
 
 ## 👨‍💻 Author
 
-**Muhammad Haroon Abbas Khan** *BS Computer Science, University of Sindh, Laar Campus Badin*
+**Muhammad Haroon Abbas Khan**
+*BS Computer Science, University of Sindh, Laar Campus Badin*
 
-I am a Data Scientist and AI/ML developer focused on bridging the gap between raw data and deployed applications. I specialize in building end-to-end data pipelines, designing deep learning architectures, and serving intelligent web applications using robust relational databases (like Oracle and PostgreSQL) and modern API frameworks.
+Data Scientist and AI/ML developer focused on bridging the gap between raw data and deployed applications: building end-to-end data pipelines, designing deep learning architectures, and serving models through modern API frameworks backed by relational databases such as Oracle and PostgreSQL.
 
 **Certifications:**
 
-  * 🏆 Oracle Cloud Infrastructure (OCI) AI Foundations Certified
-  * 🏆 Oracle Cloud Infrastructure (OCI) Generative AI Professional Certified
+- 🏆 Oracle Cloud Infrastructure (OCI) AI Foundations Certified
+- 🏆 Oracle Cloud Infrastructure (OCI) Generative AI Professional Certified
 
-**Connect with me:**
-
-  * **GitHub:** [@RealHaroon](https://www.google.com/search?q=https://github.com/RealHaroon)
-
-<!-- end list -->
-
-```
-```
+**Connect:** [GitHub @RealHaroon](https://github.com/RealHaroon)

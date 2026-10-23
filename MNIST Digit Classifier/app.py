@@ -112,11 +112,11 @@ async def predict(payload: dict):
         raise HTTPException(status_code=400, detail="No digit drawn.")
 
     from pathlib import Path
-    Path("debug").mkdir(exist_ok=True)
-    Image.fromarray((x[0] * 255).astype("uint8"), mode="L").save("debug/last_28x28.png")
+    (BASE_DIR / "debug").mkdir(exist_ok=True)
+    Image.fromarray((x[0] * 255).astype("uint8"), mode="L").save(BASE_DIR / "debug" / "last_28x28.png")
 
-    logits = model(x, training=False).numpy()[0]
-    probs = tf.nn.softmax(logits).numpy()
+    # Model already ends in a softmax layer, so its output is the probabilities
+    probs = model(x, training=False).numpy()[0]
 
     pred = int(np.argmax(probs))
     conf = float(np.max(probs))

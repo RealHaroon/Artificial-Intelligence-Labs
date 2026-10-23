@@ -7,8 +7,10 @@ from pydantic import BaseModel, Field
 import pandas as pd
 import numpy as np
 import joblib
+from pathlib import Path
 
-artifact = joblib.load("D:\\Github\Artificial-Intelligence-Labs\\Diabetes Diagnostic Tool\\model\diabetes_classification_model.pkl")
+BASE_DIR = Path(__file__).resolve().parent
+artifact = joblib.load(BASE_DIR / "model" / "diabetes_classification_model.pkl")
 model = artifact["model"]
 threshold = artifact["threshold"]
 feature_names = artifact["feature_names"]
@@ -17,7 +19,7 @@ app = FastAPI(title="Diabetes Prediction API")
 
 
 
-templates = Jinja2Templates(directory="templates") 
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 class Patient(BaseModel):
     Pregnancies: int = Field(..., ge=0)

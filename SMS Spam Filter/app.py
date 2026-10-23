@@ -3,11 +3,12 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import joblib
+from pathlib import Path
 
-# 1. Load the Model and Vectorizer using your exact file paths
-# (Using the 'r' prefix for raw strings to handle Windows backslashes safely)
-MODEL_PATH = r"D:\Talha\SMS Spam Filter\model\spam_model.joblib"
-VECTORIZER_PATH = r"D:\Talha\SMS Spam Filter\model\vectorizer.joblib"
+# 1. Load the Model and Vectorizer (paths relative to this file)
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "model" / "spam_model.joblib"
+VECTORIZER_PATH = BASE_DIR / "model" / "vectorizer.joblib"
 
 model = joblib.load(MODEL_PATH)
 vectorizer = joblib.load(VECTORIZER_PATH)
@@ -15,7 +16,7 @@ vectorizer = joblib.load(VECTORIZER_PATH)
 app = FastAPI(title="SMS Spam Detector API")
 
 # 2. Setup templates folder for UI
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # 3. Define Input Schema
 class SpamRequest(BaseModel):

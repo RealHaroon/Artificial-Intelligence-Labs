@@ -10,14 +10,13 @@ The model is served via a **FastAPI** backend with a modern dark-themed UI.
 
 > Upload any image → Get instant prediction with confidence scores for all 10 classes.
 
-![UI Preview](templates/preview.png)
+Run the app locally (see [Getting Started](#-getting-started)) to try it.
 
 ---
 
 ## 🗂️ Project Structure
-```markdown
-
-CIFAR-10/
+```text
+CIFAR-10 Object Recognition/
 │
 ├── model/
 │   ├── cifar10_cnn_best.keras       # Best model saved by ModelCheckpoint
@@ -74,9 +73,12 @@ Built from scratch using TensorFlow/Keras — **no transfer learning**.
 
 | Metric         | Value         |
 |----------------|---------------|
-| Test Accuracy  | ~85–88%       |
-| Hardest Classes| Cat, Dog, Deer|
-| Best Classes   | Ship, Automobile, Airplane |
+| Test Accuracy  | **82.27%**    |
+| Test Loss      | 0.5291        |
+| Hardest Classes| Cat (F1 0.72), Dog (0.74), Bird (0.76) |
+| Best Classes   | Automobile (F1 0.93), Ship (0.91), Horse (0.86) |
+
+Cats and dogs are confused most often — they share shape, texture and pose at 32×32 resolution.
 
 ---
 
@@ -85,8 +87,8 @@ Built from scratch using TensorFlow/Keras — **no transfer learning**.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/cifar10-cnn.git
-cd cifar10-cnn
+git clone https://github.com/RealHaroon/Artificial-Intelligence-Labs.git
+cd "Artificial-Intelligence-Labs/CIFAR-10 Object Recognition"
 ```
 
 ### 2. Install Dependencies
@@ -227,4 +229,4 @@ Computer Science Student | Deep Learning & Computer Vision
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+No license file is included in this repository yet; the project is shared for educational use.

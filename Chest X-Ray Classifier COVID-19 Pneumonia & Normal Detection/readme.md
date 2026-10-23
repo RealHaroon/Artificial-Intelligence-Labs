@@ -26,14 +26,17 @@ Build a multi-class chest X-ray classifier with:
 ## Folder Structure
 
 ```
-Chest-X-Ray-Classifier/
+Chest X-Ray Classifier COVID-19 Pneumonia & Normal Detection/
 │
 ├── model/
 │   ├── chest_xray_densenet121.keras        # Final saved model
 │   └── best_chest_xray.keras               # Best checkpoint (val_loss)
 │
 ├── notebook/
-│   └── Chest X-Ray Classifier COVID-19 Pneumonia and Normal Detection
+│   └── Chest X-Ray Classifier COVID-19 Pneumonia and Normal Detection.ipynb
+│
+├── Slides/
+│   └── Chest X-Ray Classifier.pptx         # Presentation
 │
 ├── templates/
 │   └── index.html                          # UI page
@@ -148,9 +151,9 @@ We evaluate using:
 
 ***
 
-## Results (Your Run)
+## Results
 
-From your test evaluation:
+Test-set evaluation:
 - Accuracy: **0.9270**
 - Macro-F1: **0.9336**
 - Macro AUC-ROC: **0.9943**
@@ -160,7 +163,7 @@ Per-class highlights:
 - NORMAL precision ≈ **0.7800** (main weakness: more false NORMAL predictions than ideal)
 - PNEUMONIA F1 ≈ **0.9436** (strong)
 
-### Pros of Your Scores
+### Strengths
 - Very strong COVID19 detection
 - Excellent macro AUC suggests strong separability
 - Macro-F1 is high, meaning performance is balanced overall
@@ -197,12 +200,9 @@ This includes model architecture + weights and can be reloaded for inference.
 ## Deployment (FastAPI + HTML UI)
 
 ### FastAPI Backend
-- `POST /predict` accepts an image upload
-- Returns:
-  - predicted class
-  - confidence score
-  - class probabilities
-  - disclaimer
+- `POST /predict` accepts a JPEG/PNG upload (form field `file`)
+- Returns `predicted_class`, `confidence` (%), `all_probabilities` (% per class), `emoji`, `color`, `description` and `disclaimer`
+- `GET /health` reports whether the model is loaded
 
 ### Web UI
 - Drag-and-drop / click upload
@@ -219,7 +219,7 @@ pip install fastapi uvicorn tensorflow pillow jinja2 python-multipart
 ```
 
 ### 2) Start Server
-From the project root:
+From inside this project folder (paths to `model/` and `templates/` are relative):
 ```bash
 uvicorn app:app --reload --port 8000
 ```
@@ -260,6 +260,6 @@ Form-data: file=@your_xray.png
 ***
 
 ## Author
-Developed by: **Haroon Khan**  
+Developed by: **M Haroon Abbas** — [GitHub @RealHaroon](https://github.com/RealHaroon)  
 Project type: Deep Learning Lab (Transfer Learning + Deployment)
 

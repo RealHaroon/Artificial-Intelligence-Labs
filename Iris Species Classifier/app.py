@@ -3,9 +3,11 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 import numpy as np
 import joblib
+from pathlib import Path
 
-MODEL_PATH = "D:\\Github\\Artificial-Intelligence-Labs\\Iris Species Classifier\\model\\iris_knn_pipeline.joblib"
-HTML_PATH = "D:\\Github\Artificial-Intelligence-Labs\\Iris Species Classifier\\template\index.html"
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "model" / "iris_knn_pipeline.joblib"
+HTML_PATH = BASE_DIR / "template" / "index.html"
 
 app = FastAPI(title="Iris KNN Classifier API")
 

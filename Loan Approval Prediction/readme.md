@@ -24,21 +24,26 @@ A university-level end-to-end ML project that predicts whether a loan applicatio
 
 ***
 
-## Project Structure (recommended)
-```
+## Project Structure
+```text
 Loan Approval Prediction/
-  app.py
-  model/
-    loan_tree.pkl
-  template/               
-    index.html
-  notebooks/
-    Load Approval Prediction.ipynb
-  data/
-    raw/
-        sample_submission.csv
-        test.csv
-        train.csv
+├── app.py                              # FastAPI backend (UI + JSON API)
+├── model/
+│   └── loan_tree.pkl                   # Full pipeline: preprocessing + Decision Tree
+├── template/
+│   └── index.html                      # Web form UI
+├── notebook/
+│   └── Loan Approval Prediction.ipynb  # Training notebook
+├── data/
+│   └── raw/
+│       ├── train.csv
+│       ├── test.csv
+│       └── sample_submission.csv
+├── slides/
+│   └── Loan Approval Prediction.pptx   # Presentation
+├── ss.png                              # UI screenshot
+├── testCase.txt                        # Sample applicant inputs
+└── requirements.txt                    # (currently empty — see below)
 ```
 
 ***
@@ -113,19 +118,11 @@ This is important because deployment must reproduce training preprocessing exact
 
 ## Running the API
 ### 1) Install dependencies
+The bundled `requirements.txt` is empty, so install directly:
 ```bash
-pip install -r requirements.txt
+pip install pandas numpy scikit-learn joblib fastapi uvicorn jinja2 python-multipart
 ```
-
-Example `requirements.txt`:
-```txt
-pandas
-numpy
-scikit-learn
-joblib
-fastapi
-uvicorn
-```
+Python **3.10+** is required (the app uses `str | None` type hints). Model and template paths are resolved relative to `app.py`, so no path edits are needed.
 
 ### 2) Start server
 From the project folder:
@@ -141,19 +138,43 @@ Docs:
 ***
 
 ## API Endpoints
-### `POST /predict-loan`
-- Input: applicant features (JSON)
-- Output: predicted class + approval probability
+### `GET /`
+Renders the web form.
 
-### UI (optional)
-If you mounted a UI:
-- Visit `/` and use the form to test the model interactively.
+### `POST /predict-ui`
+Form submission from the UI; re-renders the page with the result (or an error message).
+
+### `POST /predict-loan`
+**Request:**
+```json
+{
+  "Gender": "Male",
+  "Married": "Yes",
+  "Dependents": "0",
+  "Education": "Graduate",
+  "Self_Employed": "No",
+  "ApplicantIncome": 5000,
+  "CoapplicantIncome": 1500,
+  "LoanAmount": 128,
+  "Loan_Amount_Term": 360,
+  "Credit_History": 1,
+  "Property_Area": "Urban"
+}
+```
+Only `ApplicantIncome` and `CoapplicantIncome` are required; missing fields are imputed by the pipeline.
+
+**Response** (illustrative):
+```json
+{
+  "prediction": "Approved",
+  "approval_probability": 0.84
+}
+```
 
 ***
 
 ## Common Issues
 - **Column name mismatch**: If training used `Self_Employed` but API/UI sends `Self_Employment`, prediction will fail or behave incorrectly.
-- **Wrong model path**: Ensure `MODEL_PATH` points to `Loan Approval Prediction/model/loan_tree.pkl`.
 - **Different dataset schema**: If you trained on a different Kaggle loan dataset, update your API fields accordingly.
 
 ***
@@ -165,3 +186,6 @@ If you mounted a UI:
 - Add input validation rules (ranges for income/loan amount).
 
 ***
+
+## Author
+**M Haroon Abbas** — [GitHub @RealHaroon](https://github.com/RealHaroon)
