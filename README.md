@@ -7,7 +7,12 @@
 ![XGBoost](https://img.shields.io/badge/XGBoost-Regression-green)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Deployment-009688?logo=fastapi)
 
-A hands-on portfolio of **11 end-to-end Machine Learning and Deep Learning labs**. Every lab goes beyond a standalone notebook: data is explored and preprocessed, a model is trained and evaluated, the trained artifact is saved, and the model is served through a **FastAPI** app with a browser UI.
+A hands-on portfolio of **end-to-end Machine Learning and Deep Learning labs**, organized into two folders:
+
+- 🧠 [**Deep Learning**](./Deep%20Learning/) — neural networks for computer vision (4 labs)
+- 📊 [**Machine Learning**](./Machine%20Learning/) — classical ML for classification, regression and NLP (8 labs)
+
+Every deployed lab goes beyond a standalone notebook: data is explored and preprocessed, a model is trained and evaluated, the trained artifact is saved, and the model is served through a **FastAPI** app with a browser UI.
 
 ---
 
@@ -27,19 +32,27 @@ A hands-on portfolio of **11 end-to-end Machine Learning and Deep Learning labs*
 
 ## 📊 Projects at a Glance
 
+### 🧠 Deep Learning
+
 | # | Lab | Task | Model | Dataset | Key Result |
 |---|-----|------|-------|---------|------------|
-| 1 | [Chest X-Ray Classifier](./Chest%20X-Ray%20Classifier%20COVID-19%20Pneumonia%20&%20Normal%20Detection/) | 3-class image classification | DenseNet121 (transfer learning) | Kaggle Chest X-ray (COVID-19 & Pneumonia) | Acc **92.7%**, Macro-F1 **0.934**, AUC **0.994** |
-| 2 | [Malaria Cell Classification](./Malaria%20Cell%20Classification%20System/) | Binary image classification | Custom CNN | Kaggle Cell Images for Malaria | Acc **95.3%**, ROC-AUC **0.990** |
-| 3 | [CIFAR-10 Object Recognition](./CIFAR-10%20Object%20Recognition/) | 10-class image classification | Custom CNN + augmentation | CIFAR-10 | Test Acc **82.3%** |
-| 4 | [MNIST Digit Classifier](./MNIST%20Digit%20Classifier/) | 10-class digit recognition | Dense neural network | MNIST | Test Acc **97.8%** |
-| 5 | [Diabetes Diagnostic Tool](./Diabetes%20Diagnostic%20Tool/) | Binary classification | Logistic Regression + threshold tuning | Pima Indians Diabetes | Recall **0.85** @ tuned threshold |
-| 6 | [Loan Approval Prediction](./Loan%20Approval%20Prediction/) | Binary classification | Decision Tree | Kaggle Loan Prediction | Acc **82.9%** |
-| 7 | [Iris Species Classifier](./Iris%20Species%20Classifier/) | 3-class classification | KNN (k=3) | Iris (scikit-learn) | Test Acc **95.7%** |
-| 8 | [SMS Spam Filter](./SMS%20Spam%20Filter/) | Text classification (NLP) | TF-IDF + Multinomial Naive Bayes | SMS Spam Collection | Acc **96.7%** |
-| 9 | [House Price Predictor](./House%20Price%20Predictor/) | Regression | Linear Regression | Ames Housing | Test R² **0.77** |
-| 10 | [Real Estate Price Estimator](./Real%20State%20Price%20Estimator/) | Regression | XGBoost Regressor | California Housing | R² **0.81** |
-| 11 | [Salary Predictor](./Salary%20Predictor/) | Simple regression | Linear Regression | Salary vs. Experience | R² **0.90** |
+| 1 | [Chest X-Ray Classifier](./Deep%20Learning/Chest%20X-Ray%20Classifier%20COVID-19%20Pneumonia%20&%20Normal%20Detection/) | 3-class image classification | DenseNet121 (transfer learning) | Kaggle Chest X-ray (COVID-19 & Pneumonia) | Acc **92.7%**, Macro-F1 **0.934**, AUC **0.994** |
+| 2 | [Malaria Cell Classification](./Deep%20Learning/Malaria%20Cell%20Classification%20System/) | Binary image classification | Custom CNN | Kaggle Cell Images for Malaria | Acc **95.3%**, ROC-AUC **0.990** |
+| 3 | [CIFAR-10 Object Recognition](./Deep%20Learning/CIFAR-10%20Object%20Recognition/) | 10-class image classification | Custom CNN + augmentation | CIFAR-10 | Test Acc **82.3%** |
+| 4 | [MNIST Digit Classifier](./Deep%20Learning/MNIST%20Digit%20Classifier/) | 10-class digit recognition | Dense neural network | MNIST | Test Acc **97.8%** |
+
+### 📊 Machine Learning
+
+| # | Lab | Task | Model | Dataset | Key Result |
+|---|-----|------|-------|---------|------------|
+| 1 | [Diabetes Diagnostic Tool](./Machine%20Learning/Diabetes%20Diagnostic%20Tool/) | Binary classification | Logistic Regression + threshold tuning | Pima Indians Diabetes | Recall **0.85** @ tuned threshold |
+| 2 | [Loan Approval Prediction](./Machine%20Learning/Loan%20Approval%20Prediction/) | Binary classification | Decision Tree | Kaggle Loan Prediction | Acc **82.9%** |
+| 3 | [Iris Species Classifier](./Machine%20Learning/Iris%20Species%20Classifier/) | 3-class classification | KNN (k=3) | Iris (scikit-learn) | Test Acc **95.7%** |
+| 4 | [SMS Spam Filter](./Machine%20Learning/SMS%20Spam%20Filter/) | Text classification (NLP) | TF-IDF + Multinomial Naive Bayes | SMS Spam Collection | Acc **96.7%** |
+| 5 | [House Price Predictor](./Machine%20Learning/House%20Price%20Predictor/) | Regression | Linear Regression | Ames Housing | Test R² **0.77** |
+| 6 | [Real Estate Price Estimator](./Machine%20Learning/Real%20State%20Price%20Estimator/) | Regression | XGBoost Regressor | California Housing | R² **0.81** |
+| 7 | [Salary Predictor](./Machine%20Learning/Salary%20Predictor/) | Simple regression | Linear Regression | Salary vs. Experience | R² **0.90** |
+| 8 | [DNA Sequence Classifier](./Machine%20Learning/DNA%20Sequence%20Classifier/) | Multi-class classification | k-mer features + Logistic Regression / XGBoost | Synthetic DNA sequences | 🚧 In progress |
 
 Each lab folder has its own README with the full pipeline, results and API reference.
 
@@ -76,6 +89,7 @@ Each lab follows the same lifecycle:
 - 🏠 **House Price Predictor** — Linear Regression on five key Ames Housing features.
 - 🏘️ **Real Estate Price Estimator** — XGBoost regressor on the 8-feature California Housing dataset.
 - 💼 **Salary Predictor** — Single-feature Linear Regression mapping years of experience to salary.
+- 🧬 **DNA Sequence Classifier** *(in progress)* — Classifies DNA sequences by organism class using k-mer counts plus GC/AT content, comparing a majority baseline, Logistic Regression and XGBoost with stratified cross-validation.
 
 ---
 
@@ -116,17 +130,22 @@ Top level:
 
 ```text
 Artificial-Intelligence-Labs/
-├── Chest X-Ray Classifier COVID-19 Pneumonia & Normal Detection/
-├── CIFAR-10 Object Recognition/
-├── Diabetes Diagnostic Tool/
-├── House Price Predictor/
-├── Iris Species Classifier/
-├── Loan Approval Prediction/
-├── Malaria Cell Classification System/
-├── MNIST Digit Classifier/
-├── Real State Price Estimator/
-├── Salary Predictor/
-├── SMS Spam Filter/
+├── Deep Learning/
+│   ├── Chest X-Ray Classifier COVID-19 Pneumonia & Normal Detection/
+│   ├── CIFAR-10 Object Recognition/
+│   ├── Malaria Cell Classification System/
+│   └── MNIST Digit Classifier/
+│
+├── Machine Learning/
+│   ├── Diabetes Diagnostic Tool/
+│   ├── DNA Sequence Classifier/
+│   ├── House Price Predictor/
+│   ├── Iris Species Classifier/
+│   ├── Loan Approval Prediction/
+│   ├── Real State Price Estimator/
+│   ├── Salary Predictor/
+│   └── SMS Spam Filter/
+│
 ├── Genetic Algorithms.py   # Placeholder for upcoming Genetic Algorithms work (currently empty)
 ├── main.py                 # Placeholder (currently empty)
 └── README.md
@@ -180,10 +199,10 @@ Artificial-Intelligence-Labs/
 
 ## 🌐 Running a Lab
 
-Each lab is a standalone FastAPI app. Run it from inside the lab folder:
+Each deployed lab is a standalone FastAPI app. Run it from inside the lab folder:
 
 ```bash
-cd "Iris Species Classifier"
+cd "Machine Learning/Iris Species Classifier"
 uvicorn app:app --reload
 ```
 

@@ -88,7 +88,7 @@ Cats and dogs are confused most often — they share shape, texture and pose at 
 
 ```bash
 git clone https://github.com/RealHaroon/Artificial-Intelligence-Labs.git
-cd "Artificial-Intelligence-Labs/CIFAR-10 Object Recognition"
+cd "Artificial-Intelligence-Labs/Deep Learning/CIFAR-10 Object Recognition"
 ```
 
 ### 2. Install Dependencies
