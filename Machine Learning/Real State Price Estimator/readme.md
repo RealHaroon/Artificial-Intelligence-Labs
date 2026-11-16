@@ -83,7 +83,7 @@ Gradient-boosted trees capture the non-linear effect of location (latitude/longi
 ### 1. Install dependencies
 
 ```bash
-pip install fastapi uvicorn jinja2 joblib numpy scikit-learn xgboost
+pip install -r requirements.txt
 ```
 
 ### 2. Start the server

@@ -215,7 +215,7 @@ This includes model architecture + weights and can be reloaded for inference.
 
 ### 1) Install Dependencies
 ```bash
-pip install fastapi uvicorn tensorflow pillow jinja2 python-multipart
+pip install -r requirements.txt
 ```
 
 ### 2) Start Server

@@ -91,7 +91,7 @@ Empty canvases are rejected with `400 No digit drawn.` The last processed image 
 ### 1. Install dependencies
 
 ```bash
-pip install fastapi uvicorn tensorflow pillow jinja2 numpy
+pip install -r requirements.txt
 ```
 
 ### 2. (Optional) Retrain the model

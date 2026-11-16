@@ -94,7 +94,7 @@ cd "Artificial-Intelligence-Labs/Deep Learning/CIFAR-10 Object Recognition"
 ### 2. Install Dependencies
 
 ```bash
-pip install fastapi uvicorn python-multipart pillow tensorflow jinja2
+pip install -r requirements.txt
 ```
 
 ### 3. Train the Model (optional — skip if model files already exist)

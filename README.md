@@ -52,7 +52,7 @@ Every deployed lab goes beyond a standalone notebook: data is explored and prepr
 | 5 | [House Price Predictor](./Machine%20Learning/House%20Price%20Predictor/) | Regression | Linear Regression | Ames Housing | Test R² **0.77** |
 | 6 | [Real Estate Price Estimator](./Machine%20Learning/Real%20State%20Price%20Estimator/) | Regression | XGBoost Regressor | California Housing | R² **0.81** |
 | 7 | [Salary Predictor](./Machine%20Learning/Salary%20Predictor/) | Simple regression | Linear Regression | Salary vs. Experience | R² **0.90** |
-| 8 | [DNA Sequence Classifier](./Machine%20Learning/DNA%20Sequence%20Classifier/) | Multi-class classification | k-mer features + Logistic Regression / XGBoost | Synthetic DNA sequences | 🚧 In progress |
+| 8 | [DNA Sequence Classifier](./Machine%20Learning/DNA%20Sequence%20Classifier/) | 4-class sequence classification | k-mer features + XGBoost | Synthetic DNA sequences | CV Acc **~0.24** (chance level — see lab README) |
 
 Each lab folder has its own README with the full pipeline, results and API reference.
 
@@ -89,7 +89,7 @@ Each lab follows the same lifecycle:
 - 🏠 **House Price Predictor** — Linear Regression on five key Ames Housing features.
 - 🏘️ **Real Estate Price Estimator** — XGBoost regressor on the 8-feature California Housing dataset.
 - 💼 **Salary Predictor** — Single-feature Linear Regression mapping years of experience to salary.
-- 🧬 **DNA Sequence Classifier** *(in progress)* — Classifies DNA sequences by organism class using k-mer counts plus GC/AT content, comparing a majority baseline, Logistic Regression and XGBoost with stratified cross-validation.
+- 🧬 **DNA Sequence Classifier** — Predicts the organism class (Bacteria, Human, Plant, Virus) of a DNA sequence from 3–4-mer counts, GC content, length and a mutation flag, with a FastAPI app and a paste-a-sequence UI. Every model, XGBoost included, scores at chance level on the synthetic dataset, which the lab documents as a finding.
 
 ---
 
@@ -180,14 +180,13 @@ Artificial-Intelligence-Labs/
     source venv/bin/activate
     ```
 
-3. **Install dependencies.** There is no single root `requirements.txt`; this command covers every lab:
+3. **Install a lab's dependencies.** Every lab has its own `requirements.txt`, split into the packages the FastAPI app needs and the extra ones its training notebook uses:
 
     ```bash
-    pip install numpy pandas scikit-learn xgboost joblib matplotlib seaborn \
-                tensorflow pillow fastapi uvicorn jinja2 python-multipart jupyter
+    pip install -r "Machine Learning/Iris Species Classifier/requirements.txt"
     ```
 
-    The Diabetes lab also ships its own pinned `requirements.txt`.
+    The Deep Learning labs need TensorFlow 2.19+ because their models are saved in the Keras 3 `.keras` format.
 
 4. **Explore the notebooks:**
 
@@ -199,7 +198,7 @@ Artificial-Intelligence-Labs/
 
 ## 🌐 Running a Lab
 
-Each deployed lab is a standalone FastAPI app. Run it from inside the lab folder:
+Each deployed lab is a standalone FastAPI app. Run it from inside the lab folder (the DNA lab's app is `main.py`, so use `uvicorn main:app` there):
 
 ```bash
 cd "Machine Learning/Iris Species Classifier"
@@ -224,6 +223,7 @@ Then open:
 | House Price | `POST /predict` | HTML form (5 features) |
 | Real Estate | `POST /predict` | JSON (8 features) |
 | Salary | `POST /predict` | JSON `{ "years_experience": 5.5 }` |
+| DNA Sequence | `POST /predict` | JSON `{ "sequence": "ATGC...", "mutation_flag": 0 }` |
 
 ---
 

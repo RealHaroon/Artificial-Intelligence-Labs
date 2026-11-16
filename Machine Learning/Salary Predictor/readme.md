@@ -72,7 +72,7 @@ Salary grows almost linearly with experience, so a single-feature linear model e
 ### 1. Install dependencies
 
 ```bash
-pip install fastapi uvicorn jinja2 python-multipart scikit-learn joblib numpy pandas
+pip install -r requirements.txt
 ```
 
 ### 2. Start the server

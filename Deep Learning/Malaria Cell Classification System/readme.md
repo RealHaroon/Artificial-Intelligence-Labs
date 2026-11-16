@@ -81,7 +81,7 @@ Malaria Cell Classification System/
 
 1. Install dependencies:
    ```bash
-   pip install fastapi uvicorn tensorflow pillow jinja2 python-multipart numpy
+   pip install -r requirements.txt
    ```
 2. Start the server from inside this folder:
    ```bash

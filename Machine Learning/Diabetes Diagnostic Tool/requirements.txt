@@ -1,9 +1,17 @@
-numpy==1.24.3
-pandas==2.0.3
-scikit-learn==1.3.0
-matplotlib==3.7.2
-seaborn==0.12.2
-joblib==1.3.2
-fastapi==0.103.1
-uvicorn==0.23.2
-pydantic==2.3.0
+# Diabetes Diagnostic Tool
+# Python 3.10+  |  Install: pip install -r requirements.txt
+
+# --- App (FastAPI serving) ---
+fastapi>=0.110
+uvicorn>=0.27
+jinja2>=3.1
+pydantic>=2.0
+scikit-learn>=1.7
+pandas>=2.0
+numpy>=1.26
+joblib>=1.3
+
+# --- Training notebook only ---
+matplotlib>=3.7
+seaborn>=0.12
+jupyter>=1.0

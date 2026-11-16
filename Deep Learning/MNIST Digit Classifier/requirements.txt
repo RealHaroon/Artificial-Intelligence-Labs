@@ -1,0 +1,14 @@
+# MNIST Digit Classifier
+# Python 3.10+  |  Install: pip install -r requirements.txt
+
+# --- App (FastAPI serving) ---
+fastapi>=0.110
+uvicorn>=0.27
+jinja2>=3.1
+tensorflow>=2.19          # model saved with Keras 3.13 (.keras format)
+numpy>=1.26
+pillow>=10.0
+
+# --- Training notebook only ---
+matplotlib>=3.7
+jupyter>=1.0

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DNA Classifier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef2f5; --panel: #ffffff; --ink: #18232e; --muted: #5b6b7a; --line: #cfd8e0;
+    --accent: #1f5f8b; --error: #b3261e;
+    --A: #2e9e5b; --T: #d1453b; --C: #2f6fd6; --G: #d99a1e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10171e; --panel: #18222c; --ink: #e4ebf1; --muted: #93a3b2; --line: #2c3a47;
+      --accent: #6fb1e0; --error: #ff8a80;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 16px/1.55 "IBM Plex Sans", system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 20px; }
+  h1 { font-size: 2rem; margin: 0 0 6px; font-weight: 600; }
+  .intro { color: var(--muted); margin: 0 0 28px; max-width: 60ch; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
+  label { font-weight: 600; display: block; margin-bottom: 8px; }
+  textarea { width: 100%; min-height: 110px; resize: vertical; padding: 12px;
+             font: 500 15px/1.5 "IBM Plex Mono", monospace; letter-spacing: .05em;
+             color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+  textarea:focus, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* The live sequence strip: one coloured bar per base */
+  .strip { display: flex; height: 26px; margin: 14px 0 6px; border-radius: 4px; overflow: hidden;
+           background: var(--bg); border: 1px solid var(--line); }
+  .strip span { flex: 1; min-width: 1px; }
+  .legend { display: flex; gap: 16px; font-size: .85rem; color: var(--muted); flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+  .check { display: flex; align-items: center; gap: 8px; font-weight: 400; margin: 0; }
+  .spacer { flex: 1; }
+  button { font: 600 15px "IBM Plex Sans", sans-serif; border-radius: 6px; padding: 10px 18px; cursor: pointer; }
+  .primary { background: var(--accent); color: var(--panel); border: 0; }
+  .primary:disabled { opacity: .55; cursor: wait; }
+  .ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+
+  .error { color: var(--error); margin-top: 14px; min-height: 1.2em; }
+  #result { margin-top: 22px; display: none; }
+  .answer { font-size: 1.6rem; font-weight: 600; margin: 0; }
+  .meta { color: var(--muted); margin: 2px 0 16px; }
+  .bar { display: grid; grid-template-columns: 80px 1fr 56px; gap: 10px; align-items: center; margin: 6px 0; }
+  .track { height: 10px; background: var(--bg); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--accent); width: 0; transition: width .5s ease; }
+  .bar.top .fill { background: var(--A); }
+  .note { font-size: .9rem; color: var(--muted); border-top: 1px solid var(--line); margin-top: 18px; padding-top: 12px; }
+  @media (prefers-reduced-motion: reduce) { .fill { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>DNA Classifier</h1>
+  <p class="intro">Paste a DNA sequence and the model guesses whether it comes from a human, bacteria, plant or virus.</p>
+
+  <div class="panel">
+    <label for="seq">DNA sequence</label>
+    <textarea id="seq" placeholder="ATGCGTACGTTAGCCTAGG…" spellcheck="false"></textarea>
+    <div class="strip" id="strip" aria-hidden="true"></div>
+    <div class="legend">
+      <span><i style="background:var(--A)"></i>A</span>
+      <span><i style="background:var(--T)"></i>T</span>
+      <span><i style="background:var(--C)"></i>C</span>
+      <span><i style="background:var(--G)"></i>G</span>
+      <span id="stats"></span>
+    </div>
+
+    <div class="row">
+      <label class="check"><input type="checkbox" id="mut"> Has mutation</label>
+      <span class="spacer"></span>
+      <button class="ghost" id="random" type="button">Random sequence</button>
+      <button class="primary" id="go" type="button">Classify</button>
+    </div>
+    <div class="error" id="error" role="alert"></div>
+
+    <div id="result" aria-live="polite">
+      <p class="answer" id="answer"></p>
+      <p class="meta" id="meta"></p>
+      <div id="bars"></div>
+      <p class="note" id="note"></p>
+    </div>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const seqBox = $("seq");
+
+function cleanSeq() { return seqBox.value.replace(/\s+/g, "").toUpperCase(); }
+
+function drawStrip() {
+  const s = cleanSeq();
+  $("strip").innerHTML = [...s.slice(0, 400)].map(b =>
+    `<span style="background:var(--${"ACGT".includes(b) ? b : "error"})"></span>`).join("");
+  if (!s.length) { $("stats").textContent = ""; return; }
+  const gc = ((s.split("G").length - 1) + (s.split("C").length - 1)) / s.length * 100;
+  $("stats").textContent = `${s.length} bases, GC ${gc.toFixed(1)}%`;
+}
+seqBox.addEventListener("input", drawStrip);
+
+$("random").onclick = () => {
+  seqBox.value = Array.from({ length: 100 }, () => "ACGT"[Math.floor(Math.random() * 4)]).join("");
+  drawStrip();
+};
+
+$("go").onclick = async () => {
+  $("error").textContent = "";
+  const sequence = cleanSeq();
+  if (sequence.length < 3) { $("error").textContent = "Enter at least 3 bases (A, C, G, T)."; return; }
+
+  $("go").disabled = true; $("go").textContent = "Classifying…";
+  try {
+    const res = await fetch("/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sequence, mutation_flag: $("mut").checked ? 1 : 0 }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Invalid input.");
+    showResult(data);
+  } catch (e) {
+    $("error").textContent = e.message || "Could not reach the server. Is uvicorn running?";
+  } finally {
+    $("go").disabled = false; $("go").textContent = "Classify";
+  }
+};
+
+function showResult(d) {
+  $("result").style.display = "block";
+  $("answer").textContent = d.prediction;
+  $("meta").textContent = `${(d.confidence * 100).toFixed(1)}% confidence, ${d.length} bases, GC ${d.gc_content}%`;
+  const sorted = Object.entries(d.probabilities).sort((a, b) => b[1] - a[1]);
+  $("bars").innerHTML = sorted.map(([name, p], i) => `
+    <div class="bar ${i === 0 ? "top" : ""}">
+      <span>${name}</span>
+      <div class="track"><div class="fill" data-w="${(p * 100).toFixed(1)}"></div></div>
+      <span>${(p * 100).toFixed(1)}%</span>
+    </div>`).join("");
+  requestAnimationFrame(() => document.querySelectorAll(".fill").forEach(f => f.style.width = f.dataset.w + "%"));
+  $("note").textContent = `Model accuracy in testing: ${(d.model_cv_accuracy * 100).toFixed(1)}%. ` +
+    `The training data is synthetic, so treat predictions as a demo, not a real result.`;
+}
+</script>
+</body>
+</html>

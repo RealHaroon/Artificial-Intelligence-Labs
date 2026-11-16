@@ -2,3 +2,7 @@ CLAUDE.md
 
 /run/media/haroon/Local Disk (D:)/Github/Artificial-Intelligence-Labs/.vscode
 /.vscode 
+
+# Python bytecode
+__pycache__/
+*.pyc

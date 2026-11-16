@@ -74,7 +74,7 @@ Setosa is perfectly separable; the single error is a virginica predicted as vers
 ### 1. Install dependencies
 
 ```bash
-pip install numpy scikit-learn joblib fastapi uvicorn
+pip install -r requirements.txt
 ```
 
 ### 2. (Optional) Retrain

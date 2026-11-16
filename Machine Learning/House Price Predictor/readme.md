@@ -76,7 +76,7 @@ The model explains roughly 77–83% of the price variance using only five featur
 ### 1. Install dependencies
 
 ```bash
-pip install fastapi uvicorn jinja2 python-multipart joblib numpy scikit-learn
+pip install -r requirements.txt
 ```
 
 ### 2. Start the server

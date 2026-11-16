@@ -43,7 +43,7 @@ Loan Approval Prediction/
 │   └── Loan Approval Prediction.pptx   # Presentation
 ├── ss.png                              # UI screenshot
 ├── testCase.txt                        # Sample applicant inputs
-└── requirements.txt                    # (currently empty — see below)
+└── requirements.txt                    # Python dependencies
 ```
 
 ***
@@ -118,9 +118,8 @@ This is important because deployment must reproduce training preprocessing exact
 
 ## Running the API
 ### 1) Install dependencies
-The bundled `requirements.txt` is empty, so install directly:
 ```bash
-pip install pandas numpy scikit-learn joblib fastapi uvicorn jinja2 python-multipart
+pip install -r requirements.txt
 ```
 Python **3.10+** is required (the app uses `str | None` type hints). Model and template paths are resolved relative to `app.py`, so no path edits are needed.
 

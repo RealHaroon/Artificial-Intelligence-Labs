@@ -77,7 +77,7 @@ SMS Spam Filter/
 ### 1. Install dependencies
 
 ```bash
-pip install fastapi uvicorn jinja2 joblib scikit-learn pandas
+pip install -r requirements.txt
 ```
 
 ### 2. Start the server
