@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.streamlit/
+
+# Generated scanner output
+*_scanned.png
+*_scanned.jpg
+*_scanned.jpeg
+*_scanned.pdf
+scanned_document.pdf
+samples

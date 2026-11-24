@@ -1,0 +1,11 @@
+# Runtime dependencies (Python 3.10+)
+numpy>=1.24,<3
+opencv-python-headless>=4.8,<5
+Pillow>=10,<13
+img2pdf>=0.5,<1
+streamlit>=1.30,<2
+streamlit-image-coordinates>=0.4.1,<1
+streamlit-cropper>=0.3.1,<1
+
+# Development and tests
+pytest>=7.4,<10
